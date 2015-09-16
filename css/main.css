@@ -2,15 +2,22 @@
 /*************************
 *******Typography******
 **************************/
-@import url(http://fonts.googleapis.com/css?family=Roboto:400,300,400italic,500,700,100);
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,800,300,600,700);
 @import url(http://fonts.googleapis.com/css?family=Abel);
+@import url(https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300);
 
 body {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   background:;
   position: relative;
   font-weight:400px;
+}
+
+.detail{
+  margin-top:100px;   
+}
+
+.logo{
+    text-align: center;
 }
 
 ul li {
@@ -35,7 +42,7 @@ a {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
 }
 
 .btn:hover, 
@@ -52,7 +59,7 @@ a#scrollUp {
   bottom: 0px;
   right: 10px;
   padding: 5px 10px;
-  background: #FE980F;
+  background: #05a4c1;
   color: #FFF;
   -webkit-animation: bounce 2s ease infinite;
   animation: bounce 2s ease infinite;
@@ -78,7 +85,7 @@ a#scrollUp i{
 .contactinfo ul li a{
   font-size: 12px;
   color: #696763;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
 }
 
 
@@ -136,8 +143,13 @@ a#scrollUp i{
 	background:#CE3C2D;
 }
 
+.header-middle{
+  background-color: black;
+  border-bottom: 1px solid #f5f5f5;  
+}
+
 .header-middle .container .row {
-  border-bottom: 1px solid #f5f5f5;
+  
   margin-left: 0;
   margin-right: 0;
   padding-bottom: 20px;
@@ -162,13 +174,13 @@ a#scrollUp i{
 }
 
 .usa:hover {
-	background:#FE980F;
+	background:#05a4c1;
 	color:#fff;
-	border-color:#FE980F;
+	border-color:#05a4c1;
 }
 
 .usa:active, .usa.active {
-  background: none repeat scroll 0 0 #FE980F;
+  background: none repeat scroll 0 0 #05a4c1;
   box-shadow: inherit;
   outline: 0 none;
 }
@@ -179,9 +191,9 @@ a#scrollUp i{
 }
 
 .dropdown-menu  li  a:hover, .dropdown-menu  li  a:focus {
-  background-color: #FE980F;
+  background-color: #05a4c1;
   color: #FFFFFF;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   text-decoration: none;
 }
 
@@ -200,7 +212,7 @@ a#scrollUp i{
 .shop-menu ul li a {
   background: #FFFFFF;
   color: #696763;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 14px;
   font-weight: 300;
   padding:0;
@@ -215,18 +227,29 @@ a#scrollUp i{
 
 
 .shop-menu ul li a:hover {
-	color:#fe980f;
+	color:#05a4c1;
 	background:#fff;
 }
 
 
 .header-bottom {
-  padding-bottom: 30px;
-  padding-top: 30px;
+  padding-top: 15px;
+  border-bottom: white solid 1px;
+}
+
+.header-bottom .row {
+  vertical-align: middle;
+  line-height: normal; 
 }
 
 .navbar-collapse.collapse{
   padding-left: 0;
+}
+
+.mainmenu{
+  vertical-align: middle;
+  line-height: normal;
+  text-transform: uppercase;  
 }
 
 .mainmenu ul li{
@@ -240,23 +263,22 @@ a#scrollUp i{
 
 .mainmenu ul li a {
 	color: #696763;
-	font-family: 'Roboto', sans-serif;
-	font-size: 17px;
+	font-family: 'Open Sans Condensed', sans-serif;
+	font-size: 18px;
 	font-weight: 300;
-	padding: 0;
-	padding-bottom: 10px;
+	padding: 10px 0 20px 0;
 }
 
 .mainmenu ul li a:hover, .mainmenu ul li a.active,  .shop-menu ul li a.active{
 	background:none;
-	color:#fdb45e;
+	color:#05a4c1;
 }
 
 .search_box input {
   background: #F0F0E9;
   border: medium none;
   color: #B2B2B2;
-  font-family: 'roboto';
+  font-family: 'Open Sans Condensed';
   font-size: 12px;
   font-weight: 300;
   height: 35px;
@@ -288,15 +310,13 @@ a#scrollUp i{
 
 ul.sub-menu {
 	position: absolute;
-	top: 30px;
+	top: 50px;
 	left: 0;
-	background: rgba(0, 0, 0, 0.6);
+	background: rgba(255, 255, 255, 0.6);
 	list-style: none;
 	padding: 0;
 	margin: 0;
 	width: 220px;
-	-webkit-box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1);
-	box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1);
 	display: none;
 	z-index: 999;
 }
@@ -316,11 +336,11 @@ ul.sub-menu {
 }
 
 .navbar-nav li ul.sub-menu li a{
-  color: #fff;
+  color: black;
 }
 
 .navbar-nav li ul.sub-menu li a:hover{
-    color: #FDB45E;
+  color: #05a4c1;
 }
 
 .fa-angle-down{
@@ -355,8 +375,21 @@ ul.sub-menu {
   padding-bottom: 20px;
 }
 
+.cara_memesan, .list_resi, .list_testimoni{
+  margin: 50px 0 50px 0;
+}
+
+.cara_memesan h1{
+  color:#05a4c1;
+}
+
 .companyinfo {
   margin-top: 57px;
+}
+
+.companyinfo img{
+  width: 180px;
+  height:auto;
 }
 
 .companyinfo h2 {
@@ -367,14 +400,66 @@ ul.sub-menu {
 }
 
 .companyinfo h2  span{
-  color:#FE980F;
+  color:#05a4c1;
 }
 
 .companyinfo p {
   color: #B3B3AD;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 12px;
   font-weight: 300;
+}
+
+.social-footer-content img{
+  width: 24px;
+  height:100%;
+  display: block;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.social-footer-content p{
+  padding-top: 10px;
+  text-align:center;
+}
+
+.social-footer {
+  height:100%;
+  padding-top:8%;
+}
+
+.serviceinfo h2 {
+  color: #424242;
+  font-family: abel;
+  font-size: 20px;
+  text-transform: uppercase;
+}
+
+.serviceinfo h2  span{
+  color:#05a4c1;
+}
+
+.serviceinfo p {
+  color: #5c5c5c;
+  font-family: 'Open Sans Condensed', sans-serif;
+  font-size: 12px;
+  font-weight: 300;
+}
+
+.social-container{
+  width: 50%;
+  padding: 10px;
+  border: 1px solid #CCCCC6;
+}
+
+.social-container img{
+  height: 24px;
+  margin-bottom: 5px;
+}
+
+.social-container p{
+  display:inline;
+  padding-left:20px;
 }
 
 .footer-top .col-sm-3{
@@ -405,7 +490,7 @@ ul.sub-menu {
   top: 0;
   width: 100%;
   height: 61px;
-  background: #FE980F;
+  background: #05a4c1;
   border-radius: 3px;
   color: #FFF;
   font-size: 20px;
@@ -430,7 +515,7 @@ ul.sub-menu {
 
 .video-gallery p {
   color: #8C8C88;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 12px;
   font-weight: 500;
   margin-bottom:0px;
@@ -438,7 +523,7 @@ ul.sub-menu {
 
 .video-gallery  h2 {
   color: #8c8c88;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 12px;
   font-weight: 300;
   text-transform:uppercase;
@@ -457,7 +542,7 @@ ul.sub-menu {
 
 .address p {
   color: #666663;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 14px;
   font-weight: 300;
   left: 25px;
@@ -476,7 +561,7 @@ ul.sub-menu {
 
 .single-widget h2 {
   color: #666663;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 16px;
   font-weight: 500;
   margin-bottom: 22px;
@@ -489,7 +574,7 @@ ul.sub-menu {
 
 .single-widget ul li a{
 	color: #8C8C88;
-	font-family: 'Roboto', sans-serif;
+	font-family: 'Open Sans Condensed', sans-serif;
 	font-size: 14px;
 	font-weight: 300;
 	padding: 5px 0;
@@ -501,14 +586,14 @@ ul.sub-menu {
 
 .single-widget ul li a:hover{
 	background:none;
-	color:#FE980F;
+	color:#05a4c1;
 }
 
 
 .searchform input {
   border: 1px solid #DDDDDD;
   color: #CCCCC6;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 14px;
   margin-top: 0;
   outline: medium none;
@@ -518,7 +603,7 @@ ul.sub-menu {
 
 
 .searchform button {
-  background: #FE980F;
+  background: #05a4c1;
   border: medium none;
   border-radius: 0;
   margin-left: -5px;
@@ -533,12 +618,12 @@ ul.sub-menu {
 
 .searchform  button:hover, 
 .searchform  button:focus{
-	background-color:#FE980F;
+	background-color:#05a4c1;
 }
 
 .searchform p {
   color: #8C8C88;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 14px;
   font-weight: 300;
   margin-top: 25px;
@@ -551,13 +636,13 @@ ul.sub-menu {
 
 .footer-bottom p {
   color: #363432;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-weight: 300;
   margin-left: 15px;
 }
 
 .footer-bottom p span a {
-  color: #FE980F;
+  color: #05a4c1;
   font-style: italic;
   text-decoration: underline;
 }
@@ -577,13 +662,8 @@ ul.sub-menu {
 }
 
 .carousel-indicators li.active {
-	  background: #FE980F;
+	  background: #05a4c1;
 }
-
-.item {
-  padding-left: 100px;
-}
-
 
 .pricing {
   position: absolute;
@@ -591,9 +671,16 @@ ul.sub-menu {
   top: 52%;
 }
 
-.girl {
-  margin-left: 0;
+.slider_content{
+    width:100%;
+    position:relative;
 }
+
+.slider_img {
+  height:441px;
+  width:100%;
+}
+
 
 .item h1 {
   color: #B4B1AB;
@@ -603,12 +690,20 @@ ul.sub-menu {
 }
 
 .item h1 span {
-	color:#FE980F;
+	color:#05a4c1;
+}
+
+.item .desc {
+    position: absolute; 
+    top: 150px; 
+    left: 50px;
+    width:70%; 
+    background-color: rgba(128,128,128,0.8); /*dim the background*/
 }
 
 .item h2 {
   color: #363432;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 28px;
   font-weight: 700;
   margin-bottom: 22px;
@@ -619,15 +714,15 @@ ul.sub-menu {
 	color:#363432;
 	font-size:16px;
 	font-weight:300;
-	font-family: 'Roboto', sans-serif;
+	font-family: 'Open Sans Condensed', sans-serif;
 }
 
 .get {
-  background: #FE980F;
+  background: yellow;
   border: 0 none;
   border-radius: 0;
-  color: #FFFFFF;
-  font-family: 'Roboto', sans-serif;
+  color: black;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 16px;
   font-weight: 300;
   margin-top: 23px;
@@ -635,7 +730,7 @@ ul.sub-menu {
 
 
 .item button:hover {
-  background: #FE980F;
+  background: #05a4c1;
 }
 
 .control-carousel {
@@ -646,11 +741,95 @@ ul.sub-menu {
 }
 
 .control-carousel:hover{
-  color: #FE980F ;
+  color: #05a4c1 ;
 }
 
 .right {
   right: 0;
+}
+
+.cek-resi{
+    background:white;
+    margin-bottom: 10px;
+    padding-top: 20px;
+}
+
+.cek-resi span{
+    border-bottom: yellow;
+}
+
+.cek-resi span p{
+    width: 40%;
+    font-family: 'Open Sans Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: #05a4c1;
+    padding-left:10px; 
+    background: black;
+}
+
+.cek-resi form{
+    padding:10px;
+}
+
+.cek-resi .button-resi {
+  color: #05a4c1;
+  background: black;
+  font-weight: bold;
+  border: 0px;
+  margin-left: 5px;
+  padding: 3px;
+}
+ 
+.cek-resi .button-resi:hover {
+  color: black;
+  background: yellow;
+}
+
+.cek_ongkir{
+    padding: 20px;
+}
+
+.single-testimoni{
+    border: 1px solid #a1a1a1;
+    margin: 10px;
+    padding: 20px;
+}
+
+.single-testimoni span{
+    color: #05a4c1;
+    font-size: 16px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.single-testimoni p.date{
+    color: #a1a1a1;
+    font-size: 12px;    
+}
+
+.product-categories{
+    background:yellow;    
+}
+
+.product-categories span{
+    position: absolute; 
+    top: 200px; 
+    left: 0; 
+    width: 70%;
+    background-color: rgba(255,255,0,1); /*dim the background*/
+}
+
+.product-categories span p{
+    font-family: 'Open Sans Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 28px;
+    color: black;
+    text-align: center;
+}
+
+.product-categories img{
+    height:100%;
 }
 
 .category-products {
@@ -660,8 +839,8 @@ ul.sub-menu {
   padding-top: 15px;
 }
 .left-sidebar h2, .brands_products h2 {
-  color: #FE980F;
-  font-family: 'Roboto', sans-serif;
+  color: #05a4c1;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 18px;
   font-weight: 700;
   margin: 0 auto 30px;
@@ -723,7 +902,7 @@ h2.title:before{
 
 .category-products .panel-default .panel-heading .panel-title a {
   color: #696763;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 14px;
   text-decoration: none;
   text-transform: uppercase;
@@ -755,7 +934,7 @@ h2.title:before{
 
 .panel-body ul li a {
   color: #696763;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 12px;
   text-transform: uppercase;
 }
@@ -770,7 +949,7 @@ h2.title:before{
 .brands-name .nav-stacked li a {
   background-color: #FFFFFF;
   color: #696763;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 14px;
   padding: 5px 25px;
   text-decoration: none;
@@ -807,7 +986,7 @@ h2.title:before{
 
 
 .tooltip-inner {
-  background-color: #FE980F;
+  background-color: #05a4c1;
   border-radius: 4px;
   color: #FFFFFF;
   max-width: 200px;
@@ -817,7 +996,7 @@ h2.title:before{
 }
 
 .tooltip.top .tooltip-arrow {
-  border-top-color: #FE980F;
+  border-top-color: #05a4c1;
   border-width: 5px 5px 0;
   bottom: 0;
   left: 50%;
@@ -835,8 +1014,8 @@ h2.title:before{
 
 
 h2.title {
-  color: #FE980F;
-  font-family: 'Roboto', sans-serif;
+  color: #05a4c1;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 18px;
   font-weight: 700;
   margin: 0 15px;
@@ -862,22 +1041,22 @@ h2.title {
 }
 
 .productinfo h2{
-	color: #FE980F;
-	font-family: 'Roboto', sans-serif;
+	color: #05a4c1;
+	font-family: 'Open Sans Condensed', sans-serif;
 	font-size: 24px;
 	font-weight: 700;
 }
 .product-overlay h2{
 	color: #fff;
-	font-family: 'Roboto', sans-serif;
+	font-family: 'Open Sans Condensed', sans-serif;
 	font-size: 24px;
 	font-weight: 700;
 }
 
 
 .productinfo p{
-  font-family: 'Roboto', sans-serif;
-  font-size: 14px;
+  font-family: 'Open Sans Condensed', sans-serif;
+  font-size: 18px;
   font-weight: 400;
   color: #696763;
 }
@@ -891,7 +1070,7 @@ h2.title {
 }
 
 .product-overlay {
-  background:#FE980F;
+  background:#05a4c1;
   top: 0;
   display: none;
   height: 0;
@@ -920,20 +1099,20 @@ h2.title {
   background:#fff;
   border: 0 none;
   border-radius: 0;
-  color: #FE980F;
-  font-family: 'Roboto', sans-serif;
+  color: #05a4c1;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 15px;
   margin-bottom: 25px;
 }
 
 .product-overlay .add-to-cart:hover {
   background:#fff;
-  color: #FE980F;
+  color: #05a4c1;
 }
 
 
 .product-overlay p{
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 14px;
   font-weight: 400;
   color: #fff;
@@ -946,13 +1125,13 @@ h2.title {
   border: 0 none;
   border-radius: 0;
   color: #696763;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 15px;
   margin-bottom: 25px;
 }
 
 .add-to-cart:hover {
-  background: #FE980F;
+  background: #05a4c1;
   border: 0 none;
   border-radius: 0;
   color: #FFFFFF;
@@ -967,7 +1146,7 @@ h2.title {
 }
 
 .add-to-cart:hover {
-  background: #FE980F;
+  background: #05a4c1;
   color: #FFFFFF;
 }
 
@@ -977,7 +1156,7 @@ h2.title {
 
 .choose ul li a {
   color: #B3AFA8;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 13px;
   padding-left: 0;
   padding-right: 0;
@@ -989,7 +1168,7 @@ h2.title {
 
 .choose ul li a:hover{
 	background:none;
-	color:#FE980F;
+	color:#05a4c1;
 }
 
 .category-tab {
@@ -997,8 +1176,9 @@ h2.title {
 }
 
 .category-tab ul {
-  background: #40403E;
-  border-bottom: 1px solid #FE980F;
+  background: none;
+  border-top: 1px solid #a1a1a1;
+  border-bottom: 1px solid #a1a1a1;
   list-style: none outside none;
   margin: 0 0 30px;
   padding: 0;
@@ -1008,15 +1188,15 @@ h2.title {
 .category-tab ul li a {
   border: 0 none;
   border-radius: 0;
-  color: #B3AFA8;
+  color: #05a4c1;
   display: block;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 14px;
   text-transform: uppercase;
 }
 
 .category-tab ul  li  a:hover{
-	background:#FE980F;
+	background:#05a4c1;
 	color:#fff;
 }
 
@@ -1025,7 +1205,7 @@ h2.title {
   -moz-border-left-colors: none;
   -moz-border-right-colors: none;
   -moz-border-top-colors: none;
-  background-color: #FE980F;
+  background-color: #05a4c1;
   border:0px;
   color: #FFFFFF;
   cursor: default;
@@ -1054,7 +1234,7 @@ h2.title {
 }
 
 .recommended-item-control i {
-  background: none repeat scroll 0 0 #FE980F;
+  background: none repeat scroll 0 0 #05a4c1;
   color: #FFFFFF;
   font-size: 20px;
   padding: 4px 10px;
@@ -1113,8 +1293,8 @@ h2.title {
 }
 
 .pagination  .active  a, .pagination  .active  span, .pagination  .active  a:hover, .pagination  .active  span:hover, .pagination  .active  a:focus, .pagination  .active  span:focus {
-  background-color: #FE980F;
-  border-color: #FE980F;
+  background-color: #05a4c1;
+  border-color: #05a4c1;
   color: #FFFFFF;
   cursor: default;
   z-index: 2;
@@ -1134,7 +1314,7 @@ h2.title {
 }
 
 .pagination  li  a:hover{
-	background:#FE980F;
+	background:#05a4c1;
 	color:#fff;
 }
 
@@ -1179,10 +1359,10 @@ h2.title {
 }
 
 .view-product a {
-  background: #FE980F;
+  background: #05a4c1;
   bottom: 0;
   color: #FFFFFF;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 14px;
   font-weight: 700;
   margin-bottom: 0;
@@ -1205,7 +1385,7 @@ h2.title {
   top: 35%;
 }
 .item-control i {
-  background: #FE980F;
+  background: #05a4c1;
   color: #FFFFFF;
   font-size: 20px;
   padding: 5px 10px;
@@ -1232,14 +1412,14 @@ h2.title {
 
 .product-information h2 {
   color: #363432;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 20px;
   margin-top: 0;
 }
 
 .product-information p {
   color: #696763;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   margin-bottom: 5px;
 }
 
@@ -1250,9 +1430,9 @@ h2.title {
 }
 
 .product-information span span {
-  color: #FE980F;
+  color: #05a4c1;
   float: left;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 30px;
   font-weight: 700;
   margin-right: 20px;
@@ -1261,7 +1441,7 @@ h2.title {
 .product-information span input {
   border: 1px solid #DEDEDC;
   color: #696763;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 20px;
   font-weight: 700;
   height: 33px;
@@ -1272,7 +1452,7 @@ h2.title {
 
 .product-information span label {
   color: #696763;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-weight: 700;
   margin-right: 5px;
 }
@@ -1283,11 +1463,11 @@ h2.title {
 
 
 .cart {
-  background: #FE980F;
+  background: #05a4c1;
   border: 0 none;
   border-radius: 0;
   color: #FFFFFF;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 15px;
   margin-bottom: 10px;
   margin-left: 20px;
@@ -1307,7 +1487,7 @@ h2.title {
 }
 
 
-#reviews ul {
+.list_testimoni ul {
   background: #FFFFFF;
   border: 0 none;
   list-style: none outside none;
@@ -1315,51 +1495,54 @@ h2.title {
   padding: 0;
 }
 
-#reviews  ul  li {
+.list_testimoni  ul  li {
 	display:inline-block;
 }
 
-#reviews ul li a {
+.list_testimoni ul li a {
   color: #696763;
   display: block;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 14px;
   padding-right: 15px;
 }
 
-#reviews ul li a i{
-	color:#FE980F;
+.list_testimoni ul li a i{
+	color:#05a4c1;
 	padding-right:8px;
 }
 
-#reviews ul li a:hover{
+.list_testimoni ul li a:hover{
 	background:#fff;
-	color:#FE980F;
+	color:#05a4c1;
 }
 
-#reviews p{
+.list_testimoni p{
 	color:#363432;
 }
 
-#reviews  form span {
+.list_testimoni  form span {
   display: block;
 }
 
-#reviews form span input {
+.list_testimoni form span input {
   background:#F0F0E9;
   border: 0 none;
   color: #A6A6A1;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 14px;
   outline: medium none;
   padding: 8px;
-  width: 48%;
+  width: 31%;
+  margin-bottom: 2%;
+  
 }
-#reviews form span input:last-child {
+
+.list_testimoni form span input:nth-child(2), .list_testimoni form span input:nth-child(3) {
   margin-left: 3%;
 }
 
-#reviews textarea {
+.list_testimoni textarea {
   background: #F0F0E9;
   border: medium none;
   color: #A6A6A1;
@@ -1373,12 +1556,12 @@ h2.title {
   width: 99.5%;
 }
 
-#reviews button {
-  background: #FE980F;
+.list_testimoni button {
+  background: #05a4c1;
   border: 0 none;
   border-radius: 0;
   color: #FFFFFF;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 14px;
 }
 
@@ -1393,7 +1576,7 @@ h2.title {
 
 .content-404 h1 {
   color: #363432;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 41px;
   font-weight: 300;
 }
@@ -1404,7 +1587,7 @@ h2.title {
 
 .content-404 p {
   color: #363432;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 18px;
 }
 
@@ -1413,9 +1596,9 @@ h2.title {
 }
 
 .content-404 h2 a {
-  background: #FE980F;
+  background: #05a4c1;
   color: #FFFFFF;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 44px;
   font-weight: 300;
   padding: 8px 40px;
@@ -1443,7 +1626,7 @@ h2.title {
 
 .login-form h2, .signup-form h2 {
   color: #696763;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 20px;
   font-weight: 300;
   margin-bottom: 30px;
@@ -1455,7 +1638,7 @@ h2.title {
   border: medium none;
   color: #696763;
   display: block;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-size: 14px;
   font-weight: 300;
   height: 40px;
@@ -1481,12 +1664,12 @@ h2.title {
 }
 
 .login-form form button, .signup-form form button {
-  background: #FE980F;
+  background: #05a4c1;
   border: medium none;
   border-radius: 0;
   color: #FFFFFF;
   display: block;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   padding: 6px 25px;
 }
 
@@ -1506,10 +1689,10 @@ h2.title {
 
 
 .or{
-	background: #FE980F;
+	background: #05a4c1;
 	border-radius: 40px;
 	color: #FFFFFF;
-	font-family: 'Roboto', sans-serif;
+	font-family: 'Open Sans Condensed', sans-serif;
 	font-size: 16px;
 	height: 50px;
 	line-height: 50px;
@@ -1538,7 +1721,7 @@ h2.title {
 }
 
 .breadcrumbs .breadcrumb li a {
-  background:#FE980F;
+  background:#05a4c1;
   color: #FFFFFF;
   padding: 3px 7px;
 }
@@ -1549,7 +1732,7 @@ h2.title {
   width: auto;
   border-width: 8px;
   border-style: solid;
-  border-color:transparent transparent transparent #FE980F;
+  border-color:transparent transparent transparent #05a4c1;
   position: absolute;
   top: 11px;
   left:48px;
@@ -1567,10 +1750,10 @@ h2.title {
 
 
 #cart_items .cart_info .cart_menu {
-  background: #FE980F;
+  background: #05a4c1;
   color: #fff;
   font-size: 16px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-weight: normal;
 }
 
@@ -1604,7 +1787,7 @@ h2.title {
 
 #cart_items .cart_info .cart_description h4 a {
   color: #363432;
-  font-family: 'Roboto',sans-serif;
+  font-family: 'Open Sans Condensed',sans-serif;
   font-size: 20px;
   font-weight: normal;
 
@@ -1622,7 +1805,7 @@ h2.title {
 
 
 #cart_items .cart_info .cart_total_price {
-  color: #FE980F;
+  color: #05a4c1;
   font-size: 24px;
 }
 
@@ -1649,7 +1832,7 @@ h2.title {
   float: left;
   font-size: 16px;
   text-align: center;
-  font-family: 'Roboto',sans-serif;
+  font-family: 'Open Sans Condensed',sans-serif;
   
 }
 
@@ -1669,7 +1852,7 @@ h2.title {
 }
 
 .cart_delete a:hover {
-  background:#FE980F
+  background:#05a4c1
 }
 
 
@@ -1682,7 +1865,7 @@ h2.title {
 .heading h3 {
   color: #363432;
   font-size: 20px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
 }
 
 .heading p {
@@ -1774,7 +1957,7 @@ h2.title {
 }
 
 .update, .check_out {
-  background: #FE980F;
+  background: #05a4c1;
   border-radius: 0;
   color: #FFFFFF;
   margin-top: 18px;
@@ -1805,7 +1988,7 @@ h2.title {
   font-size: 20px;
   margin-bottom: 35px;
   padding: 10px 25px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
 }
 
 .checkout-options {
@@ -1818,7 +2001,7 @@ h2.title {
   font-size: 20px;
   margin-bottom: 0;
   font-weight: normal;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
 }
 
 .checkout-options p {
@@ -1832,7 +2015,7 @@ h2.title {
   margin-right: 45px;
   color: #696763;
   font-size: 18px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   font-weight: normal;
 }
 
@@ -1841,7 +2024,7 @@ h2.title {
 }
 
 .checkout-options .nav li a {
-  color: #FE980F;
+  color: #05a4c1;
   font-size: 18px;
   font-weight: normal;
   padding: 0
@@ -1855,7 +2038,7 @@ h2.title {
   margin-right: 10px;
   border-radius: 50%;
   padding: 5px;
-  background: #FE980F;
+  background: #05a4c1;
   color:#fff;
   font-size: 14px;
   padding: 2px 3px;
@@ -1886,7 +2069,7 @@ h2.title {
 
 
 .shopper-info .btn-primary {
-  background: #FE980F;
+  background: #05a4c1;
   border: 0 none;
   border-radius: 0;
   margin-right: 15px;
@@ -1931,7 +2114,7 @@ h2.title {
 .order-message label {
   font-weight:300;
   color: #696763;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   margin-left: 10px;
   font-size: 14px
 }
@@ -1971,7 +2154,7 @@ h2.title {
 
 #cart_items .cart_info 
 .table.table-condensed.total-result span {
-  color: #FE980F;
+  color: #05a4c1;
   font-weight: 700;
   font-size: 16px
 }
@@ -1995,7 +2178,7 @@ h2.title {
 .single-blog-post h3 {
   color: #696763;
   font-size: 16px;
-  font-family: 'Roboto',sans-serif;
+  font-family: 'Open Sans Condensed',sans-serif;
   text-transform: uppercase;
   font-weight: 500;
   margin-bottom: 17px;
@@ -2042,7 +2225,7 @@ h2.title {
 
 .blog-post-area 
 .post-meta ul li i {
-  background:#FE980F;
+  background:#05a4c1;
   color: #FFFFFF;
   margin-left: -4px;
   margin-right: 7px;
@@ -2056,7 +2239,7 @@ h2.title {
   position: absolute;
   width: auto;
   height: auto;
-  border-color:transparent transparent transparent #FE980F;
+  border-color:transparent transparent transparent #05a4c1;
   border-width:4px;
   border-style: solid;
   top:6px;
@@ -2066,7 +2249,7 @@ h2.title {
 .blog-post-area 
 .post-meta ul span {
   float: right;
-  color: #FE980F
+  color: #05a4c1
 }
 
 .post-meta span{
@@ -2074,14 +2257,14 @@ h2.title {
 }
 
 .post-meta span i{
-  color: #FE980F
+  color: #05a4c1
 }
 
 
 .blog-post-area  
 .single-blog-post 
 .btn-primary {
-  background:#FE980F;
+  background:#05a4c1;
   border: medium none;
   border-radius: 0;
   color: #FFFFFF;
@@ -2108,7 +2291,7 @@ h2.title {
 .pagination li a:hover,
 .pagination-area 
 .pagination li .active {
-  background:#FE980F;
+  background:#05a4c1;
   color: #fff
 }
 
@@ -2136,7 +2319,7 @@ h2.title {
 
 .pager-area 
 .pager li a:hover {
-  background: #FE980F;
+  background: #05a4c1;
   color: #fff
 }
 
@@ -2174,7 +2357,7 @@ h2.title {
 .rating-area 
 .ratings .color, 
 .rating-area .color {
-  color: #FE980F
+  color: #05a4c1
 }
 
 
@@ -2224,7 +2407,7 @@ h2.title {
   color: #363432;
   font-size: 14px;
   font-weight: 700;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   margin-bottom: 15px
 }
 
@@ -2263,7 +2446,7 @@ h2.title {
 
 .blog-socials ul li a:hover {
   color: #fff;
-  background:#FE980F
+  background:#05a4c1
 }
 
 
@@ -2327,7 +2510,7 @@ h2.title {
 }
 
 .sinlge-post-meta li i {
-  background:#FE980F;
+  background:#05a4c1;
   color: #FFFFFF;
   margin-right: 10px;
   padding: 8px 10px;
@@ -2354,7 +2537,7 @@ h2.title {
 }
 
 .replay-box label {
-  background:#FE980F;
+  background:#05a4c1;
   color: #FFFFFF;
   margin-bottom: 15px;
   padding: 3px 15px;
@@ -2363,7 +2546,7 @@ h2.title {
 }
 
 .replay-box span {
-  color: #FE980F;
+  color: #05a4c1;
   float: right;
   font-weight: 700;
   margin-top: 21px;
@@ -2380,7 +2563,7 @@ h2.title {
 
 .replay-box form input:hover, 
 .text-area textarea:hover {
-  border: 1px solid #FE980F;
+  border: 1px solid #05a4c1;
 }
 
 .text-area {
@@ -2393,7 +2576,7 @@ h2.title {
 }
 
 .btn.btn-primary {
-  background:#FE980F;
+  background:#05a4c1;
   border: 0 none;
   border-radius: 0;
   margin-top: 16px;
@@ -2410,7 +2593,7 @@ h2.title {
   height: auto;
   border-style: solid;
   border-width: 8px;
-  border-color:#FE980F transparent transparent transparent;
+  border-color:#05a4c1 transparent transparent transparent;
   top: 25px;
   left: 5px
 } 
@@ -2518,7 +2701,7 @@ h2.title {
 }
 
 .contact-info .social-networks ul li a:hover{
-  color: #FE980F;
+  color: #05a4c1;
 }
 
 

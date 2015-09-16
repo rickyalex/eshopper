@@ -31,12 +31,14 @@ while($x < count($array)) {
 			$items[$i]['flag_featured'] = $row['flag_featured'];
             $items[$i]['date_created'] = $row['date_created'];
             
+            $bits = explode('.',$items[$i]['img']);
+            
 ?>
     <div class="col-sm-3">
         <div class="product-image-wrapper">
 			<div class="single-products">
 				<div class="productinfo text-center">
-					<a href="product-details.php?id=<?php echo $items[$i]['id']; ?>"><img src="uploads/<?php echo explode('.',$items[$i]['img'])[0].'_th.'.explode('.',$items[$i]['img'])[1]; ?>" alt="" /></a>
+					<a href="product-details.php?id=<?php echo $items[$i]['id']; ?>"><img src="uploads/<?php echo $bits[0].'_th.'.$bits[1]; ?>" alt="" /></a>
 					<p><?php echo $items[$i]['description']; ?></p>
 				</div>						
 			</div>

@@ -1,6 +1,6 @@
 <?php
 
-$rs = $mysqli->query("SELECT * FROM items where active='1' and flag_featured='1' order by date_created desc limit 6") or die(mysql_error());
+$rs = $mysqli->query("SELECT * FROM items where active='1' and flag_featured='1' order by date_created desc limit 8") or die(mysql_error());
 		$i=0;
 		$array=array();
 		while($row = $rs->fetch_array(MYSQLI_ASSOC))
@@ -18,19 +18,30 @@ $rs = $mysqli->query("SELECT * FROM items where active='1' and flag_featured='1'
 		}
 	$x=0;
 	while($x < count($array)) {
-			?>
-            <div class="col-sm-4">
+	   $y=0;
+?>
+<div class="item <?php if($x==0){ ?> active <?php } ?>">
+    <?php 
+        while($y < 3){
+            $bits = explode('.',$array[$y]['img']);
+    ?>
+            <div class="col-sm-3">
                 <div class="product-image-wrapper">
 					<div class="single-products">
 						<div class="productinfo text-center">
-				    		<a href="product-details.php?id=<?php echo $array[$x]['id']; ?>"><img src="uploads/<?php echo explode('.',$array[$x]['img'])[0].'_th.'.explode('.',$array[$x]['img'])[1]; ?>" alt="" /></a>
-							<h2><?php echo PREFIX_PRICE.$array[$x]['price']; ?></h2>
-							<p><?php echo $array[$x]['description']; ?></p>
+				    		<a href="product-details.php?id=<?php echo $array[$y]['id']; ?>"><img src="uploads/<?php echo $bits[0].'_th.'.$bits[1]; ?>" alt="" /></a>
+							<h2><?php echo PREFIX_PRICE.$array[$y]['price']; ?></h2>
+							<p><?php echo $array[$y]['description']; ?></p>
 						</div>
-                        <?php if($array[$x]['date_created']>=date('Y-m-d h:i:s',strtotime("-1 months"))) { ?><img src="images/home/new.png" class="new" alt="" /><?php } ?>
+                        <?php if($array[$y]['date_created']>=date('Y-m-d h:i:s',strtotime("-1 months"))) { ?><img src="images/home/new.png" class="new" alt="" /><?php } ?>
 					</div>
                 </div>
 			</div>
+            <?php
+            $y++;
+                } 
+            ?>
+</div>
 <?php
     $x++;
     }

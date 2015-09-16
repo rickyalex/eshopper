@@ -7,7 +7,7 @@ Premium: http://www.gridgum.com
 */
 
 /* Import fonts */
-/* @import url(http://fonts.googleapis.com/css?family=Ruda:400,700,900); */
+ @import url(http://fonts.googleapis.com/css?family=Ruda:400,700,900); 
 
 @font-face {
   font-family: 'Ruda';
@@ -456,6 +456,10 @@ ul.sidebar-menu li a.active i {
     padding-bottom: 15px;
     padding-top: 0px;
     width: 100%;
+}
+
+.header-middle .logo {
+    margin-top: 30px;
 }
 
 a.logo {

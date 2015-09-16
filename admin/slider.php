@@ -16,11 +16,11 @@
     $xcrud->column_tooltip('img','Recommended size is 720x252');
     //$xcrud->change_type('img','image');
     $xcrud->change_type('img', 'image', false, array(
-        'width' => 221,
+        'width' => 1140,
         'path' => '../uploads',
         'thumbs' => array(array(
-                'height' => 410,
-                'width' => 951,
+                'height' => 481,
+                'width' => 1140,
                 'crop' => true,
                 'marker' => '_th'))));
     

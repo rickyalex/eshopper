@@ -12,46 +12,35 @@
 		}
 	}
 		
-    Xcrud_config::$dbname = 'shop';
+    Xcrud_config::$dbname = 'fashion';
 	Xcrud_config::$dbuser = 'root';
 	Xcrud_config::$dbpass = 'phpmyadmin777';
 	Xcrud_config::$dbhost = 'localhost';
-	$db = Xcrud_db::get_instance('shop');
+	$db = Xcrud_db::get_instance('fashion');
 	
 	$exec = $db->query("SELECT counter from counter");
-	$items = $db->result();
-	$counter = $items[0]['counter'];
-	
-	$exec = $db->query("SELECT count(*),country from visitors group by country order by count(*) desc");
-	$items = $db->result();
-	$country = $items[0]['country'];
+	$res = $db->result();
+	$counter = $res[0]['counter'];
 	
 	$exec = $db->query("SELECT count(*) as items from items");
-	$items = $db->result();
-	$items = $items[0]['items'];
+	$res = $db->result();
+	$items = $res[0]['items'];
 	
 	$exec = $db->query("SELECT count(*) as count_category from (select distinct category from items group by category) as tbl1");
-	$items = $db->result();
-	$category = $items[0]['count_category'];
+	$res = $db->result();
+	$category = $res[0]['count_category'];
 	
 	$exec = $db->query("SELECT count(*) as new from (select * from items where date_created+INTERVAL 1 WEEK > NOW()) as tbl1");
-	$items = $db->result();
-	$new = $items[0]['new'];
-	
-	$exec = $db->query("SELECT (select count(*) from items where gender='MALE') as male, (select count(*) from items where gender='FEMALE') as female");
-	$items = $db->result();
-	$male = $items[0]['male'];
-	$female = $items[0]['female'];
+	$res = $db->result();
+	$new = $res[0]['new'];
     
 ?>
 <!DOCTYPE html>
 <html>
 	<head>
 		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-		<meta name="keywwords" content="Shop Around - Great free html template for on-line shop. Use it as a start point for your on line business. The template can be easily implemented in many open source E-commerce platforms" />
-		<meta name="description" content="Shop Around - Great free html template for on-line shop. Use it as a start point for your on line business. The template can be easily implemented in many open source E-commerce platforms" />
 		
-		<title>Shoe Store</title>
+        <title>Administrator Page</title>
 		<?php require_once('../inc/inc_header.php'); ?>
 		
 		<section id="main-content">
@@ -70,19 +59,6 @@
 						<div class="inner">
 						  <h3><?php echo $counter; ?></h3>
 						  <p>Page Hits</p>
-						</div>
-						<div class="icon">
-						  <i class="ion ion-bag"></i>
-						</div>
-						<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
-					  </div>
-					</div>
-					<div class="col-lg-2 col-xs-6">
-					  <!-- small box -->
-					  <div class="small-box bg-teal">
-						<div class="inner">
-						  <h3><?php echo $country; ?></h3>
-						  <p>Most Visiting Country</p>
 						</div>
 						<div class="icon">
 						  <i class="ion ion-bag"></i>
@@ -124,32 +100,6 @@
 					<div class="inner">
 					  <h3><?php echo $new; ?></h3>
 					  <p>New Items This Week</p>
-					</div>
-					<div class="icon">
-					  <i class="ion ion-bag"></i>
-					</div>
-					<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
-				  </div>
-				</div>
-				<div class="col-lg-2 col-xs-6">
-				  <!-- small box -->
-				  <div class="small-box bg-navy">
-					<div class="inner">
-					  <h3><?php echo $male; ?></h3>
-					  <p>Male Items</p>
-					</div>
-					<div class="icon">
-					  <i class="ion ion-bag"></i>
-					</div>
-					<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
-				  </div>
-				</div>
-				<div class="col-lg-2 col-xs-6">
-				  <!-- small box -->
-				  <div class="small-box bg-maroon">
-					<div class="inner">
-					  <h3><?php echo $female; ?></h3>
-					  <p>Female Items</p>
 					</div>
 					<div class="icon">
 					  <i class="ion ion-bag"></i>

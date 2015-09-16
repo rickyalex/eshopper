@@ -1,19 +1,9 @@
 <?php
+/* retrieve product details */
+$array = getProductDetails($id);
+$x=0;
 
-$rs = $mysqli->query("SELECT * FROM items where id='$id'") or die(mysql_error());
-$i=0;
-$array=array();
-if($row = $rs->fetch_array(MYSQLI_ASSOC))
-{
-			$array[$i]['id'] = $row['id'];
-			$array[$i]['description'] = $row['description'];
-			$array[$i]['brand'] = $row['brand'];
-			$array[$i]['price'] = $row['price'];
-			$array[$i]['category'] = $row['category'];
-			$array[$i]['active'] = $row['active'];
-			$array[$i]['img'] = $row['img'];
-			$array[$i]['flag_featured'] = $row['flag_featured'];
-            $array[$i]['date_created'] = $row['date_created'];
-}
-else header('404.php')
+$bits = explode('.',$array[$x]['img']);
 ?>
+<img src="uploads/<?php echo $bits[0].'_th.'.$bits[1]; ?>" alt="<?php echo $array[$x]['name']; ?>" />
+<h3><a data-lightbox="<?php echo $array[$x]['name']; ?>" data-title="<?php echo $array[$x]['name']; ?>" href="uploads/<?php echo $bits[0].'.'.$bits[1]; ?>">ZOOM</a></h3>

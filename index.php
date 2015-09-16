@@ -15,46 +15,9 @@
 							<li data-target="#slider-carousel" data-slide-to="1"></li>
 							<li data-target="#slider-carousel" data-slide-to="2"></li>
 						</ol>
-						
+				
 						<div class="carousel-inner">
-							<div class="item active">
-								<div class="col-sm-6">
-									<h1><span>E</span>-SHOPPER</h1>
-									<h2>Free E-Commerce Template</h2>
-									<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
-									<button type="button" class="btn btn-default get">Get it now</button>
-								</div>
-								<div class="col-sm-6">
-									<img src="images/home/girl1.jpg" class="girl img-responsive" alt="" />
-									<img src="images/home/pricing.png"  class="pricing" alt="" />
-								</div>
-							</div>
-							<div class="item">
-								<div class="col-sm-6">
-									<h1><span>E</span>-SHOPPER</h1>
-									<h2>100% Responsive Design</h2>
-									<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
-									<button type="button" class="btn btn-default get">Get it now</button>
-								</div>
-								<div class="col-sm-6">
-									<img src="images/home/girl2.jpg" class="girl img-responsive" alt="" />
-									<img src="images/home/pricing.png"  class="pricing" alt="" />
-								</div>
-							</div>
-							
-							<div class="item">
-								<div class="col-sm-6">
-									<h1><span>E</span>-SHOPPER</h1>
-									<h2>Free Ecommerce Template</h2>
-									<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
-									<button type="button" class="btn btn-default get">Get it now</button>
-								</div>
-								<div class="col-sm-6">
-									<img src="images/home/girl3.jpg" class="girl img-responsive" alt="" />
-									<img src="images/home/pricing.png" class="pricing" alt="" />
-								</div>
-							</div>
-							
+							<?php include('php/display_slider.php'); ?>
 						</div>
 						
 						<a href="#slider-carousel" class="left control-carousel hidden-xs" data-slide="prev">
@@ -72,83 +35,96 @@
 	
 	<section>
 		<div class="container">
+            <div class="row">
+                <div class="col-sm-2">
+                    <div class="product-image-wrapper">
+    					<div class="single-products">
+    						<div class="product-categories">
+                                <span>
+                                    <p>ATASAN</p>
+                                </span>
+    				    		<a href="shop.php?cat=tops"><img src="images/tops.png" alt="" /></a>
+    						</div>
+    					</div>
+                    </div>
+    			</div>
+                <div class="col-sm-2">
+                    <div class="product-image-wrapper">
+    					<div class="single-products">
+    						<div class="product-categories">
+                                <span>
+                                    <p>ROK</p>
+                                </span>
+    				    		<a href="shop.php?cat=skirt"><img src="images/skirt.png" alt="" /></a>
+    						</div>
+    					</div>
+                    </div>
+    			</div>
+                <div class="col-sm-2">
+                    <div class="product-image-wrapper">
+    					<div class="single-products">
+    						<div class="product-categories">
+                                <span>
+                                    <p>CELANA</p>
+                                </span>
+    				    		<a href="shop.php?cat=celana"><img src="images/celana.png" alt="" /></a>
+    						</div>
+    					</div>
+                    </div>
+    			</div>
+                <div class="col-sm-2">
+                    <div class="product-image-wrapper">
+    					<div class="single-products">
+    						<div class="product-categories">
+                                <span>
+                                    <p>BLAZER</p>
+                                </span>
+    				    		<a href="shop.php?cat=blazer"><img src="images/blazer.png" alt="" /></a>
+    						</div>
+    					</div>
+                    </div>
+    			</div>
+                <div class="col-sm-2">
+                    <div class="product-image-wrapper">
+    					<div class="single-products">
+    						<div class="product-categories">
+                                <span>
+                                    <p>CARDIGAN</p>
+                                </span>
+    				    		<a href="shop.php?cat=cardigan"><img src="images/cardigan.png" alt="" /></a>
+    						</div>
+    					</div>
+                    </div>
+    			</div>
+                <div class="col-sm-2">
+                    <div class="product-image-wrapper">
+    					<div class="single-products">
+    						<div class="product-categories">
+                                <span>
+                                    <p>DRESS</p>
+                                </span>
+    				    		<a href="shop.php?cat=dress"><img src="images/dress.png" alt="" /></a>
+    						</div>
+    					</div>
+                    </div>
+    			</div>
+            </div>
 			<div class="row">
-				<div class="col-sm-3">
-					<div class="left-sidebar">
-						<h2>Category</h2>
-						<div class="panel-group category-products" id="accordian"><!--category-productsr-->
-							
-							<div class="panel panel-default">
-								<div class="panel-heading">
-									<h4 class="panel-title"><a href="#">Kids</a></h4>
-								</div>
-							</div>
-							<div class="panel panel-default">
-								<div class="panel-heading">
-									<h4 class="panel-title"><a href="#">Fashion</a></h4>
-								</div>
-							</div>
-							<div class="panel panel-default">
-								<div class="panel-heading">
-									<h4 class="panel-title"><a href="#">Households</a></h4>
-								</div>
-							</div>
-							<div class="panel panel-default">
-								<div class="panel-heading">
-									<h4 class="panel-title"><a href="#">Interiors</a></h4>
-								</div>
-							</div>
-							<div class="panel panel-default">
-								<div class="panel-heading">
-									<h4 class="panel-title"><a href="#">Clothing</a></h4>
-								</div>
-							</div>
-							<div class="panel panel-default">
-								<div class="panel-heading">
-									<h4 class="panel-title"><a href="#">Bags</a></h4>
-								</div>
-							</div>
-							<div class="panel panel-default">
-								<div class="panel-heading">
-									<h4 class="panel-title"><a href="#">Shoes</a></h4>
-								</div>
-							</div>
-						</div><!--/category-products-->
-					
-						<div class="brands_products"><!--brands_products-->
-							<h2>Brands</h2>
-							<div class="brands-name">
-								<ul class="nav nav-pills nav-stacked">
-									<li><a href="#"> <span class="pull-right">(50)</span>Acne</a></li>
-									<li><a href="#"> <span class="pull-right">(56)</span>Grüne Erde</a></li>
-									<li><a href="#"> <span class="pull-right">(27)</span>Albiro</a></li>
-									<li><a href="#"> <span class="pull-right">(32)</span>Ronhill</a></li>
-									<li><a href="#"> <span class="pull-right">(5)</span>Oddmolly</a></li>
-									<li><a href="#"> <span class="pull-right">(9)</span>Boudestijn</a></li>
-									<li><a href="#"> <span class="pull-right">(4)</span>Rösch creative culture</a></li>
-								</ul>
-							</div>
-						</div><!--/brands_products-->
-						
-						<div class="price-range"><!--price-range-->
-							<h2>Price Range</h2>
-							<div class="well text-center">
-								 <input type="text" class="span2" value="" data-slider-min="0" data-slider-max="600" data-slider-step="5" data-slider-value="[250,450]" id="sl2" ><br />
-								 <b class="pull-left">$ 0</b> <b class="pull-right">$ 600</b>
-							</div>
-						</div><!--/price-range-->
-						
-						<div class="shipping text-center"><!--shipping-->
-							<img src="images/home/shipping.jpg" alt="" />
-						</div><!--/shipping-->
-					
-					</div>
-				</div>
 				
-				<div class="col-sm-9 padding-right">
+				<div class="col-sm-12 padding-right">
 					<div class="features_items"><!--features_items-->
-						<h2 class="title text-center">Features Items</h2>
-						<?php include_once('php/display_featured_items.php'); ?>					
+						<h2 class="title text-center">New Items</h2>
+						<div id="recommended-item-carousel" class="carousel slide" data-ride="carousel">
+							<div class="carousel-inner">
+								<?php include('php/display_featured_items.php'); ?>
+							</div>
+							 <a class="left recommended-item-control" href="#recommended-item-carousel" data-slide="prev">
+								<i class="fa fa-angle-left"></i>
+							  </a>
+							  <a class="right recommended-item-control" href="#recommended-item-carousel" data-slide="next">
+								<i class="fa fa-angle-right"></i>
+							  </a>			
+						</div>				
 					</div><!--features_items-->
 					
 					<div class="category-tab"><!--category-tab-->
@@ -163,7 +139,7 @@
 					</div><!--/category-tab-->
 					
 					<div class="recommended_items"><!--recommended_items-->
-						<h2 class="title text-center">recommended items</h2>
+						<h2 class="title text-center">Best Seller</h2>
 						
 						<div id="recommended-item-carousel" class="carousel slide" data-ride="carousel">
 							<div class="carousel-inner">

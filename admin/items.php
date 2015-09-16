@@ -1,5 +1,6 @@
 <?php
 	include('../inc/commons.php');
+    include('../inc/functions.php');
     include(BASE_URL.'xcrud/xcrud.php');
         
 	if (!function_exists('xcrud_get_instance'))
@@ -32,16 +33,15 @@
     $xcrud->validation_required('price');
     $xcrud->validation_required('img');
     
+    $xcrud->pass_var('sku', randomNumber(12),'create');
     $xcrud->pass_var('date_created', Date('Y-m-d h:i:s'),'create');
 ?>
 <!DOCTYPE html>
 <html>
 	<head>
 		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-		<meta name="keywwords" content="Shop Around - Great free html template for on-line shop. Use it as a start point for your on line business. The template can be easily implemented in many open source E-commerce platforms" />
-		<meta name="description" content="Shop Around - Great free html template for on-line shop. Use it as a start point for your on line business. The template can be easily implemented in many open source E-commerce platforms" />
 		
-		<title>Shoe Store</title>
+        <title>Administrator Page</title>
 		<?php require_once('../inc/inc_header.php'); ?>
 		
 		<section id="main-content">

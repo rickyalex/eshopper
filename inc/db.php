@@ -7,5 +7,7 @@
 	}
 	
 	//Adds one to the counter 
-	$mysqli->query("UPDATE counter SET counter = counter + 1");
+    $rs = $mysqli->query("SELECT count(*) as count FROM counter") or die(mysql_error());
+    if($row = $rs->fetch_array(MYSQLI_ASSOC)) $mysqli->query("UPDATE counter SET counter = counter + 1");
+    else $mysqli->query("INSERT INTO counter(counter) VALUES ('1')");
 ?>

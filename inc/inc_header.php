@@ -97,6 +97,24 @@
 							<span>Slider</span>
 						</a>
 					</li>
+                    <li class="#">
+						<a href="<?php echo BASE_URL ?>admin/resi.php">
+							<i class="fa fa-dashboard"></i>
+							<span>Resi</span>
+						</a>
+					</li>
+                    <li class="#">
+						<a href="<?php echo BASE_URL ?>admin/testimoni.php">
+							<i class="fa fa-dashboard"></i>
+							<span>Testimoni</span>
+						</a>
+					</li>
+                    <li class="#">
+						<a href="<?php echo BASE_URL ?>admin/social.php">
+							<i class="fa fa-dashboard"></i>
+							<span>Social</span>
+						</a>
+					</li>
 				</ul>			  
 				<!-- sidebar menu end-->
 			</div>
