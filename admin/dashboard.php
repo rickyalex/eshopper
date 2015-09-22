@@ -11,28 +11,29 @@
 			return Xcrud::get_instance($name);
 		}
 	}
-		
-    Xcrud_config::$dbname = 'fashion';
-	Xcrud_config::$dbuser = 'root';
-	Xcrud_config::$dbpass = 'phpmyadmin777';
-	Xcrud_config::$dbhost = 'localhost';
-	$db = Xcrud_db::get_instance('fashion');
 	
-	$exec = $db->query("SELECT counter from counter");
-	$res = $db->result();
-	$counter = $res[0]['counter'];
+    require_once("userCake/models/config.php");
+    if(!securePage($_SERVER['PHP_SELF'])){die();}
+    elseif(isUserLoggedIn()){
+       $db = Xcrud_db::get_instance('fashion');
 	
-	$exec = $db->query("SELECT count(*) as items from items");
-	$res = $db->result();
-	$items = $res[0]['items'];
+    	$exec = $db->query("SELECT counter from counter");
+    	$res = $db->result();
+    	$counter = $res[0]['counter'];
+    	
+    	$exec = $db->query("SELECT count(*) as items from items");
+    	$res = $db->result();
+    	$items = $res[0]['items'];
+    	
+    	$exec = $db->query("SELECT count(*) as count_category from (select distinct category from items group by category) as tbl1");
+    	$res = $db->result();
+    	$category = $res[0]['count_category'];
+    	
+    	$exec = $db->query("SELECT count(*) as new from (select * from items where date_created+INTERVAL 1 WEEK > NOW()) as tbl1");
+    	$res = $db->result();
+    	$new = $res[0]['new']; 
+    }	
 	
-	$exec = $db->query("SELECT count(*) as count_category from (select distinct category from items group by category) as tbl1");
-	$res = $db->result();
-	$category = $res[0]['count_category'];
-	
-	$exec = $db->query("SELECT count(*) as new from (select * from items where date_created+INTERVAL 1 WEEK > NOW()) as tbl1");
-	$res = $db->result();
-	$new = $res[0]['new'];
     
 ?>
 <!DOCTYPE html>

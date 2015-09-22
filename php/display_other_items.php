@@ -13,7 +13,7 @@ while($x < count($array)) {
 		<div class="single-products">
 	       	<div class="productinfo text-center">
 		      	<a href="product-details.php?id=<?php echo $array[$x]['id']; ?>"><img src="uploads/<?php echo $bits[0].'_th.'.$bits[1]; ?>" alt="" /></a>
-				<p><?php echo $array[$x]['description']; ?></p>
+				<p><?php echo $array[$x]['name']; ?></p>
 			</div>
 		</div>
     </div>

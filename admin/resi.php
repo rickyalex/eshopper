@@ -9,17 +9,21 @@
 			return Xcrud::get_instance($name);
 		}
 	}
-		
-    $xcrud = Xcrud::get_instance();
-    $xcrud->table('resi');
-    $xcrud->table_name('List Resi');
-    //$xcrud->column_tooltip('img','Recommended size is 720x252');
-    $xcrud->columns('date_created',true);
-    $xcrud->fields('nomor_resi,nama,remarks',true);
-    $xcrud->validation_required('nomor_resi');
-    $xcrud->validation_required('nama');
+	require_once("userCake/models/config.php");
+    if(!securePage($_SERVER['PHP_SELF'])){die();}
+    elseif(isUserLoggedIn()){
+        $xcrud = Xcrud::get_instance();
+        $xcrud->table('resi');
+        $xcrud->table_name('List Resi');
+        //$xcrud->column_tooltip('img','Recommended size is 720x252');
+        $xcrud->columns('date_created',true);
+        $xcrud->fields('nomor_resi,tgl_resi,nama,remarks');
+        $xcrud->validation_required('nomor_resi');
+        $xcrud->validation_required('nama');
+        
+        $xcrud->pass_var('date_created', Date('Y-m-d h:i:s'),'create');
+    }
     
-    $xcrud->pass_var('date_created', Date('Y-m-d h:i:s'),'create');
 ?>
 <!DOCTYPE html>
 <html>

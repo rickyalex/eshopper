@@ -2,6 +2,7 @@
     error_reporting(E_ALL);
 	ini_set("display_errors", 1);
 	include('inc/db.php');
+    include('inc/functions.php');
     include('inc/commons.php');
     include('inc/header.php');
 ?>
@@ -43,7 +44,7 @@
                                 <span>
                                     <p>ATASAN</p>
                                 </span>
-    				    		<a href="shop.php?cat=tops"><img src="images/tops.png" alt="" /></a>
+    				    		<a href="shop.php?cat=atasan"><img src="images/tops.png" alt="" /></a>
     						</div>
     					</div>
                     </div>
@@ -55,7 +56,7 @@
                                 <span>
                                     <p>ROK</p>
                                 </span>
-    				    		<a href="shop.php?cat=skirt"><img src="images/skirt.png" alt="" /></a>
+    				    		<a href="shop.php?cat=rok"><img src="images/skirt.png" alt="" /></a>
     						</div>
     					</div>
                     </div>
@@ -114,14 +115,14 @@
 				<div class="col-sm-12 padding-right">
 					<div class="features_items"><!--features_items-->
 						<h2 class="title text-center">New Items</h2>
-						<div id="recommended-item-carousel" class="carousel slide" data-ride="carousel">
+						<div id="featured-item-carousel" class="carousel slide" data-ride="carousel">
 							<div class="carousel-inner">
 								<?php include('php/display_featured_items.php'); ?>
 							</div>
-							 <a class="left recommended-item-control" href="#recommended-item-carousel" data-slide="prev">
+							 <a class="left featured-item-control" href="#featured-item-carousel" data-slide="prev">
 								<i class="fa fa-angle-left"></i>
 							  </a>
-							  <a class="right recommended-item-control" href="#recommended-item-carousel" data-slide="next">
+							  <a class="right featured-item-control" href="#featured-item-carousel" data-slide="next">
 								<i class="fa fa-angle-right"></i>
 							  </a>			
 						</div>				

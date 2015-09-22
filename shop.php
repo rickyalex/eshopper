@@ -9,7 +9,7 @@
     /* set GET values */
     $category = isset($_GET['cat']) ? $_GET['cat'] : '';
     $search = isset($_GET['s']) ? $_GET['s'] : '';
-    //die($category);
+    $page = isset($_GET['p']) ? $_GET['p'] : '1';
     
     /* return page not found if no parameter is set */
     if($category==''&&$search==''){
@@ -39,7 +39,7 @@
 			</div>
             <div class="row">
                 <div class="recommended_items"><!--recommended_items-->
-						<h2 class="title text-center">recommended items</h2>
+						<h2 class="title text-center">Best Seller</h2>
 						
 						<div id="recommended-item-carousel" class="carousel slide" data-ride="carousel">
 							<div class="carousel-inner">
@@ -60,5 +60,28 @@
 <?php
 include ('inc/footer.php'); 
 ?>	
+<script>
+    <?php 
+        $array = getSearchItems($mode,$content,null);
+        $itemCount = count($array);
+        $pageCount = $itemCount/$limit;
+        $mod = $itemCount%$limit;        
+        if($pageCount>0){
+            if($mod>0) $pageCount++;
+        } 
+        else $pageCount = 0;                        
+        if($category!=''){ ?>
+            var category = '<?php echo $category; ?>';
+            var url = "?".concat("cat=",category);
+    <?php }
+        elseif($search!=''){ ?>
+            var s = '<?php echo $search; ?>';
+            var url = "?".concat("s=",s);
+    <?php } ?>
+    $('#pagination').twbsPagination({
+        totalPages: <?php echo (int) $pageCount; ?>,
+        href: url.concat("&p={{number}}")
+    });
+</script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-/** f0ska xCRUD v.1.6.20; 06/2014 */
+/** f0ska xCRUD v.1.6.26; 03/2015 */
 /** object */
 var Xcrud = {
 	config: function(key) {
@@ -32,7 +32,8 @@ var Xcrud = {
 			success: function(response) {
 				jQuery(container).html(response);
 				//jQuery(container).trigger("xcrudafterrequest");
-				jQuery(document).trigger("xcrudafterrequest", [container, data]);
+                var status = Xcrud.check_message(container);
+				jQuery(document).trigger("xcrudafterrequest", [container, data, status]);
 				if (success_callback) {
 					success_callback(container);
 				}
@@ -267,7 +268,7 @@ var Xcrud = {
 		}
 	},
 	init_datepicker_range: function(type, container) {
-		//jQuery(container).find('.xcrud-datepicker-from.hasDatepicker,.xcrud-datepicker-to.hasDatepicker').datepicker("destroy"); // akbar
+		jQuery(container).find('.xcrud-datepicker-from.hasDatepicker,.xcrud-datepicker-to.hasDatepicker').datepicker("destroy");
 		var datepicker_config = {
 			changeMonth: true,
 			changeYear: true,
@@ -419,8 +420,6 @@ var Xcrud = {
 			case 'png':
 				break;
 			default:
-				// alert(ext);
-				// alert(Xcrud.lang('image_type_error'));
 				Xcrud.show_message(container, Xcrud.lang('image_type_error'), 'error');
 				jQuery(element).val('');
 				return false;
@@ -439,7 +438,8 @@ var Xcrud = {
 			success: function(out) {
 				Xcrud.hide_progress(container);
 				jQuery(upl_container).replaceWith(out);
-				jQuery(document).trigger("xcrudafterupload", [container, data]);
+                var status = Xcrud.check_message(container);
+				jQuery(document).trigger("xcrudafterupload", [container, data, status]);
 				var crop_img = jQuery(out).find("img.xcrud-crop");
 				if (jQuery(crop_img).size()) {
 					Xcrud.show_crop_window(crop_img, container);
@@ -535,13 +535,8 @@ var Xcrud = {
 						cropset.boxWidth = 550;
 						cropset.boxHeight = Math.round(t_h * 550 / t_w);
 					}
-					/*jQuery(crop_img).css({
-						"width": cropset.boxWidth,
-						"height": cropset.boxHeight,
-						"min-height": cropset.boxHeight
-					});*/
-					var left = Math.round((jQuery(window).width() - jQuery(".ui-dialog.ui-widget").width()) / 2);
-					var top = Math.round((jQuery(window).height() - jQuery(".ui-dialog.ui-widget").height()) / 2);
+					var left = Math.round((jQuery(window).width() - cropset.boxWidth - 10) / 2);
+					var top = Math.round((jQuery(window).height() - cropset.boxHeight - 75) / 2);
 					jQuery(".ui-dialog.ui-widget").css({
 						"position": "fixed",
 						"left": left + "px",
@@ -645,7 +640,7 @@ var Xcrud = {
 			return reg.test(jQuery.trim(val));
 			break;
 		case 'numeric':
-			reg = /^[\-+]?[0-9]*\.?[0-9]+$/;
+			reg = /^[\-+]?[0-9]*(\.|\,)?[0-9]+$/;
 			return reg.test(jQuery.trim(val));
 			break;
 		case 'integer':
@@ -653,7 +648,7 @@ var Xcrud = {
 			return reg.test(jQuery.trim(val));
 			break;
 		case 'decimal':
-			reg = /^[\-+]?[0-9]+\.[0-9]+$/;
+			reg = /^[\-+]?[0-9]+(\.|\,)[0-9]+$/;
 			return reg.test(jQuery.trim(val));
 			break;
 		case 'point':
@@ -693,15 +688,12 @@ var Xcrud = {
 			case 'numeric':
 			case 'integer':
 			case 'decimal':
-				reg = /^[0-9\.\-+]+$/;
+            case 'point':
+				reg = /^[0-9\.\,\-+]+$/;
 				return reg.test(val);
 				break;
 			case 'natural':
 				reg = /^[0-9]+$/;
-				return reg.test(val);
-				break;
-			case 'point':
-				reg = /^[0-9\.\,\-+]+$/;
 				return reg.test(val);
 				break;
 			}
@@ -944,7 +936,15 @@ var Xcrud = {
 		jQuery("#xcrud-modal-window .modal-content").html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' + header + '</h4></div>');
 		jQuery("#xcrud-modal-window .modal-content").append('<div class="modal-body">' + content + '</div>');
 		jQuery("#xcrud-modal-window").modal();
-		jQuery('#myModal').on('hidden.bs.modal', function() {
+        jQuery('#xcrud-modal-window [data-dismiss="modal"]').on("click",function(){
+            jQuery("#xcrud-modal-window").modal('hide');
+            if(jQuery(".simplemodal-close").size()){ // joomla trick
+                jQuery(".simplemodal-close").trigger("click");
+                jQuery("#xcrud-modal-window").remove();
+            }
+            return false;
+        });
+		jQuery('#xcrud-modal-window').on('hidden.bs.modal hidden', function() {
 			jQuery("#xcrud-modal-window").remove();
 		});
 	},
@@ -964,6 +964,7 @@ var Xcrud = {
 		});
 	},
 	modal: function(header, content) {
+	    content = '<span>' + content + '</span>';
 		if (typeof(jQuery.fn.modal) != 'undefined') {
             if(jQuery(content).first().prop("tagName") == 'IMG'){
                 Xcrud.load_image(jQuery(content).first().attr('src'),function(imgObj){
@@ -1009,7 +1010,7 @@ var Xcrud = {
 	show_message: function(container, text, classname, delay) {
 		if (container && text) {
 			if (!classname) classname = 'info';
-			if (!delay) delay = 3;
+			if (!delay) delay = 7;
 			var cont = jQuery(container).closest(".xcrud-container");
 			jQuery(cont).children('.xcrud-message').stop(true, true).remove();
 			jQuery(cont).append('<div class="xcrud-message ' + (classname ? classname : '') + '">' + text + '</div>');
@@ -1023,16 +1024,21 @@ var Xcrud = {
 		}
 	},
 	check_message: function(container) {
+	    var status = 'success';
 		var elements = jQuery(container).find(".xcrud-callback-message");
 		if (jQuery(elements).size()) {
 			elements.each(function() {
-				var element = this;
+				var element = $(this);
 				if (Xcrud.check_container(element, container)) {
-					Xcrud.show_message(container, jQuery(element).val(), jQuery(element).attr("name"));
-					jQuery(element).remove();
+					Xcrud.show_message(container, element.val(), element.attr("name"));
+                    if(element.attr("name") != 'success'){
+                        var status = element.attr("name");
+                    }
+					element.remove();
 				}
 			});
 		}
+        return status;
 	}
 }; /** events */
 jQuery(document).on("ready xcrudreinit", function() {
@@ -1046,8 +1052,8 @@ jQuery(document).on("ready xcrudreinit", function() {
 		$(".xcrud").on("change", ".xcrud-daterange", function() {
 			var container = Xcrud.get_container(this);
 			if ($(this).val()) {
-				$(container).find(".xcrud-datepicker-from").datepicker("setDate", new Date($(this).find('option:selected').data('from') * 1000));
-				$(container).find(".xcrud-datepicker-to").datepicker("setDate", new Date($(this).find('option:selected').data('to') * 1000));
+				$(container).find(".xcrud-datepicker-from").datepicker("setDate", new Date(($(this).find('option:selected').data('from')  + new Date().getTimezoneOffset() * 60) * 1000));
+				$(container).find(".xcrud-datepicker-to").datepicker("setDate", new Date(($(this).find('option:selected').data('to') + new Date().getTimezoneOffset() * 60) * 1000));
 			} else {
 				$(container).find(".xcrud-datepicker-from,.xcrud-datepicker-to").val('');
 			}
@@ -1172,11 +1178,8 @@ jQuery(document).on("xcrudafterrequest", function(event, container) {
 	Xcrud.check_fixed_buttons();
 	Xcrud.init_tooltips(container);
 	Xcrud.init_tabs(container);
-	Xcrud.check_message(container);
 });
-jQuery(document).on("xcrudafterupload", function(event, container) {
-	Xcrud.check_message(container);
-});
+
 //
 /** print */
 jQuery.extend({

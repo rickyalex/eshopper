@@ -2,6 +2,7 @@
     error_reporting(E_ALL);
 	ini_set("display_errors", 1);
 	include('inc/db.php');
+    include('inc/functions.php');
     include('inc/commons.php');
     include('inc/header.php');
 ?>
@@ -23,6 +24,19 @@
     							<textarea id="comment" name="comment" ></textarea>
     							<button type="submit" >Submit</button>
                             </form>
+                        </div>
+                        <div class="col-sm-6">
+                            <div id="recommended-item-carousel" class="carousel slide" data-ride="carousel">
+							<div class="carousel-inner">
+								<?php include('php/display_testimoni_images.php'); ?>
+							</div>
+							 <a class="left recommended-item-control" href="#recommended-item-carousel" data-slide="prev">
+								<i class="fa fa-angle-left"></i>
+							  </a>
+							  <a class="right recommended-item-control" href="#recommended-item-carousel" data-slide="next">
+								<i class="fa fa-angle-right"></i>
+							  </a>			
+						</div>	
                         </div>
                         <p>
                             <?php include('php/display_list_testimoni.php')?>

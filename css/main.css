@@ -275,9 +275,8 @@ a#scrollUp i{
 }
 
 .search_box input {
-  background: #F0F0E9;
-  border: medium none;
-  color: #B2B2B2;
+  background: white url(../images/home/searchicon.png) no-repeat;
+  border: solid 1px black ;
   font-family: 'Open Sans Condensed';
   font-size: 12px;
   font-weight: 300;
@@ -285,9 +284,7 @@ a#scrollUp i{
   outline: medium none;
   padding-left: 10px;
   width: 155px;
-  background-image: url(../images/home/searchicon.png);
-  background-repeat: no-repeat;
-  background-position: 130px;
+  background-position: 120px;
 }
 
 
@@ -312,7 +309,7 @@ ul.sub-menu {
 	position: absolute;
 	top: 50px;
 	left: 0;
-	background: rgba(255, 255, 255, 0.6);
+	background: white;
 	list-style: none;
 	padding: 0;
 	margin: 0;
@@ -379,8 +376,12 @@ ul.sub-menu {
   margin: 50px 0 50px 0;
 }
 
-.cara_memesan h1{
+.cara_memesan h1, .cek_ongkir h1{
   color:#05a4c1;
+}
+
+.cara_memesan li, .cek_ongkir li{
+  font-size: 18px;
 }
 
 .companyinfo {
@@ -406,8 +407,15 @@ ul.sub-menu {
 .companyinfo p {
   color: #B3B3AD;
   font-family: 'Open Sans Condensed', sans-serif;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 300;
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+.companyinfoholder {
+  width: 180px;
+  float:left;
 }
 
 .social-footer-content img{
@@ -421,6 +429,7 @@ ul.sub-menu {
 .social-footer-content p{
   padding-top: 10px;
   text-align:center;
+  font-size:18px;
 }
 
 .social-footer {
@@ -903,7 +912,7 @@ h2.title:before{
 .category-products .panel-default .panel-heading .panel-title a {
   color: #696763;
   font-family: 'Open Sans Condensed', sans-serif;
-  font-size: 14px;
+  font-size: 18px;
   text-decoration: none;
   text-transform: uppercase;
 }
@@ -1191,7 +1200,7 @@ h2.title {
   color: #05a4c1;
   display: block;
   font-family: 'Open Sans Condensed', sans-serif;
-  font-size: 14px;
+  font-size: 18px;
   text-transform: uppercase;
 }
 
@@ -1234,6 +1243,33 @@ h2.title {
 }
 
 .recommended-item-control i {
+  background: none repeat scroll 0 0 #05a4c1;
+  color: #FFFFFF;
+  font-size: 20px;
+  padding: 4px 10px;
+}
+
+.recommended-item-control i:hover {
+  background: #ccccc6;
+}
+
+.featured_items  h2 {
+}
+
+.featured_items {
+  overflow: hidden;
+}
+
+#featured-item-carousel .carousel-inner .item {
+  padding-left: 0;
+}
+
+.featured-item-control {
+  position: absolute;
+  top: 41%;
+}
+
+.featured-item-control i {
   background: none repeat scroll 0 0 #05a4c1;
   color: #FFFFFF;
   font-size: 20px;
@@ -1413,13 +1449,14 @@ h2.title {
 .product-information h2 {
   color: #363432;
   font-family: 'Open Sans Condensed', sans-serif;
-  font-size: 20px;
+  font-size: 24px;
   margin-top: 0;
 }
 
 .product-information p {
   color: #696763;
   font-family: 'Open Sans Condensed', sans-serif;
+  font-size: 18px;
   margin-bottom: 5px;
 }
 
@@ -1565,7 +1602,34 @@ h2.title {
   font-size: 14px;
 }
 
+.list_resi form span select {
+  background: white;
+  border: 0 none;
+  color: #a1a1a1;
+  font-family: 'Open Sans Condensed', sans-serif;
+  font-size: 14px;
+  padding: 8px;
+  width: 31%;
+  margin-left: 2%;
+  margin-bottom: 2%;
+  
+}
 
+.list_resi form span select.small{
+  width: 15%;
+  
+}
+
+.list_resi button {
+  background: #05a4c1;
+  border: 0 none;
+  border-radius: 0;
+  color: #FFFFFF;
+  font-family: 'Open Sans Condensed', sans-serif;
+  font-size: 14px;
+  padding: 2%;
+  margin-left:2%;
+}
 /*************************
 *******404 CSS******
 **************************/

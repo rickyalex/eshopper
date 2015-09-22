@@ -1,5 +1,5 @@
 <?php
-/** Database driver; f0ska xCRUD v.1.6.3; 12/2013 */
+/** Database driver; f0ska xCRUD v.1.6.26; 03/2015 */
 class Xcrud_db
 {
     private static $_instance = array();
@@ -10,7 +10,7 @@ class Xcrud_db
     private $dbpass;
     private $dbname;
     private $dbencoding;
-    private $magic_quotes_gpc;
+    private $magic_quotes;
 
     public static function get_instance($params = false)
     {
@@ -39,7 +39,7 @@ class Xcrud_db
     }
     private function __construct($dbuser, $dbpass, $dbname, $dbhost, $dbencoding)
     {
-        $this->magic_quotes_gpc = get_magic_quotes_gpc();
+        $this->magic_quotes = get_magic_quotes_runtime();
         if (strpos($dbhost, ':') !== false)
         {
             list($host, $port) = explode(':', $dbhost, 2);
@@ -102,17 +102,40 @@ class Xcrud_db
                     return (int)$val ? 1 : ($null ? 'NULL' : 0);
                     break;
                 case 'int':
+                    $val = preg_replace('/[^0-9\-]/', '', $val);
+                    if ($val === '')
+                    {
+                        if ($null)
+                        {
+                            return 'NULL';
+                        }
+                        else
+                        {
+                            $val = 0;
+                        }
+                    }
                     if ($bit)
                     {
-                        return 'b\'' . (int)$val . '\'';
+                        return 'b\'' . $val . '\'';
                     }
-                    return (int)$val;
+                    return $val;
                     break;
                 case 'float':
-                    return '\'' . (float)$val . '\'';
+                    if ($val === '')
+                    {
+                        if ($null)
+                        {
+                            return 'NULL';
+                        }
+                        else
+                        {
+                            $val = 0;
+                        }
+                    }
+                    return '\'' . $this->connect->real_escape_string($val) . '\'';
                     break;
                 default:
-                    if (!$val)
+                    if (trim($val) == '')
                     {
                         if ($null)
                         {
@@ -129,14 +152,14 @@ class Xcrud_db
                         {
                             $val = preg_replace('[^0-9\.\,\-]', '', $val);
                         }
-                        //return '\'' . ($this->magic_quotes_gpc ? (string )$val : $this->connect->real_escape_string((string )$val)) . '\'';
+                        //return '\'' . ($this->magic_quotes ? (string )$val : $this->connect->real_escape_string((string )$val)) . '\'';
                     }
                     break;
             }
         }
         if ($not_qu)
-            return $this->magic_quotes_gpc ? (string )$val : $this->connect->real_escape_string((string )$val);
-        return '\'' . ($this->magic_quotes_gpc ? (string )$val : $this->connect->real_escape_string((string )$val)) . '\'';
+            return $this->magic_quotes ? (string )$val : $this->connect->real_escape_string((string )$val);
+        return '\'' . ($this->magic_quotes ? (string )$val : $this->connect->real_escape_string((string )$val)) . '\'';
     }
     public function escape_like($val, $pattern = array('%', '%'))
     {
@@ -148,7 +171,7 @@ class Xcrud_db
         }
         else
         {
-            return '\'' . $pattern[0] . ($this->magic_quotes_gpc ? (string )$val : $this->connect->real_escape_string((string )$val)) .
+            return '\'' . $pattern[0] . ($this->magic_quotes ? (string )$val : $this->connect->real_escape_string((string )$val)) .
                 $pattern[1] . '\'';
         }
     }

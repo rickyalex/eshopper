@@ -335,6 +335,7 @@ input.xcrud-upload{
     width: 10%;
     margin: 0 5px 0 0;
     vertical-align: top;
+    min-width: 120px;
 }
 .xcrud-search input, .xcrud-search select, .xcrud-search .buttona{
     margin-bottom: 0;

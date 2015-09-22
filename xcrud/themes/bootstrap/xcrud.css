@@ -162,6 +162,7 @@ input.xcrud-upload{
     width: 10%;
     margin: 0 5px 0 0;
     vertical-align: top;
+    min-width: 120px;
 }
 
 .xcrud .btn-group{
@@ -286,6 +287,11 @@ h2{
     padding: 8px 15px 6px;
     margin: 0 2px;
     font-size: 20px;
+}
+
+#xcrud-modal-window .modal-body > span > img{
+    display: block;
+    width: 100%;
 }
 
 /* RTL */

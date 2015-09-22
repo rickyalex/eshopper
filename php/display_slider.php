@@ -1,7 +1,8 @@
 <?php
+    /* retrieve slider images */
+    $result = getAllSlider();
     $x=0;
-    $result = $mysqli->query("select * from slider");
-	while($row = $result->fetch_array()){
+	while($x < count($result)){
 ?>
 	<div class="item <?php if($x==0)echo "active"; ?>">
 	    <div class="slider_content">
@@ -10,7 +11,7 @@
     			<p><?php echo "".$row[2]; ?></p>
     			<button type="button" class="btn btn-default get">Get it now</button>
             </div>*/ ?>
-            <img src="<?php echo "uploads/".$row[3]; ?>" class="slider_img img-responsive" alt="" />
+            <img src="<?php echo "uploads/".$result[$x]["img"]; ?>" class="slider_img img-responsive" alt="" />
 		</div>
 	</div>
 <?php $x++;} ?>

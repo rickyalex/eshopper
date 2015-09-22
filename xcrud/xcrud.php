@@ -1,5 +1,5 @@
 <?php
-/** f0ska xCRUD v.1.6.20; 06/2014 */
+/** f0ska xCRUD v.1.6.26.1; 03/2015 */
 
 // debug enabled, great for debug and development, you can remove this two lines for production app
 error_reporting(E_ALL); // error reporting (debug)
@@ -11,6 +11,10 @@ require (XCRUD_PATH . '/xcrud_config.php'); // configuration
 require (XCRUD_PATH . '/xcrud_db.php'); // database class
 mb_internal_encoding(Xcrud_config::$mbencoding); // sets multibyte encoding globaly
 date_default_timezone_set(@date_default_timezone_get()); // xcrud code not depends on timezone, but this can fix some warnings
+if (get_magic_quotes_runtime())
+{
+    set_magic_quotes_runtime(0);
+}
 
 class Xcrud
 {
@@ -44,8 +48,6 @@ class Xcrud
     protected $is_view = true;
     protected $is_remove = true;
     protected $is_csv = true;
-		// tambahan excel button
-    protected $is_xls = true;
     protected $is_search = true;
     protected $is_print = true;
     protected $is_title = true;
@@ -124,7 +126,9 @@ class Xcrud
     protected $primary_ai = false;
 
     protected $language = 'en';
-    protected $lang_arr = array();
+
+    protected static $lang_arr = array();
+
     protected $subselect_query = array();
     protected $where_pri = array();
     protected $field_params = array();
@@ -165,7 +169,7 @@ class Xcrud
     protected $custom_vars = array();
     protected $tabdesc = array();
     public $column_name = array();
-    protected $search = 0;
+    public $search = 0;
 
     protected $hidden_columns = array(); // allows to select non in grid data
     protected $hidden_fields = array(); // allows save data in non in form fields
@@ -180,6 +184,9 @@ class Xcrud
     protected $before = '';
     protected $bit_field = array();
     protected $point_field = array();
+    protected $float_field = array();
+    protected $text_field = array();
+    protected $int_field = array();
     protected $grid_condition = array(); // ***** remove *****
     protected $hide_button = array();
     protected $set_lang = array();
@@ -205,7 +212,7 @@ class Xcrud
     protected $total_query = '';
 
     protected $condition_backup = array();
-    protected $sess_id = null;
+    protected static $sess_id = null;
     protected $is_rtl = true;
 
     protected $strip_tags = true;
@@ -215,6 +222,13 @@ class Xcrud
     protected $before_create = array();
     protected $before_edit = array();
     protected $before_view = array();
+
+    protected $lists_null_opt = true;
+    protected $custom_fields = array();
+
+    protected $date_format = array();
+
+    protected $cancel_file_saving = false;
 
 
     /** constructor, sets basic xcrud vars (they can be changed by public pethods) */
@@ -257,6 +271,10 @@ class Xcrud
 
         $this->strip_tags = Xcrud_config::$strip_tags;
         $this->safe_output = Xcrud_config::$safe_output;
+
+        $this->lists_null_opt = Xcrud_config::$lists_null_opt;
+
+        $this->date_format = array('php_d' => Xcrud_config::$php_date_format, 'php_t' => Xcrud_config::$php_time_format);
     }
     protected function __clone()
     {
@@ -300,7 +318,8 @@ class Xcrud
             self::error('Wrong request!');
         }
 
-        if (isset($_SESSION['xcrud_session'][$inst_name]['key']) && $_SESSION['xcrud_session'][$inst_name]['key'] == $key)
+        if (isset($_SESSION['lists']['xcrud_session'][$inst_name]['key']) && $_SESSION['lists']['xcrud_session'][$inst_name]['key'] ==
+            $key)
         {
             self::$instance[$inst_name] = new self();
             self::$instance[$inst_name]->is_get = $is_get;
@@ -363,13 +382,13 @@ class Xcrud
             {
                 if (!isset($_COOKIE[$sess_name]))
                 {
-                    $this->sess_id = base_convert(str_replace(' ', '', microtime()) . rand(), 10, 36);
+                    self::$sess_id = base_convert(str_replace(' ', '', microtime()) . rand(), 10, 36);
                 }
                 else
                 {
-                    $this->sess_id = $_COOKIE[$sess_name];
+                    self::$sess_id = $_COOKIE[$sess_name];
                 }
-                setcookie($sess_name, $this->sess_id, time() + Xcrud_config::$alt_lifetime * 60, '/');
+                setcookie($sess_name, self::$sess_id, time() + Xcrud_config::$alt_lifetime * 60, '/');
             }
             else
                 self::error('xCRUD can not start session, because the output is already sent into browser. 
@@ -435,9 +454,9 @@ class Xcrud
         return $this;
     }
 
-    public function table($table = '', $prefix = '')
+    public function table($table = '', $prefix = false)
     {
-        if ($prefix)
+        if ($prefix !== false)
         {
             $this->prefix = $prefix;
         }
@@ -609,7 +628,7 @@ class Xcrud
         }
         return $this;
     }
-    public function join($fields = '', $join_tbl = '', $join_field = '', $alias = false)
+    public function join($fields = '', $join_tbl = '', $join_field = '', $alias = false, $not_insert = false)
     {
         $fdata = $this->_parse_field_names($fields, 'join');
         $alias = $alias ? $alias : $join_tbl;
@@ -618,7 +637,8 @@ class Xcrud
             'table' => $fdata[$key]['table'],
             'field' => $fdata[$key]['field'],
             'join_table' => $this->prefix . $join_tbl,
-            'join_field' => $join_field);
+            'join_field' => $join_field,
+            'not_insert' => $not_insert);
         //$this->field_type[$this->join[$alias]['join_table'] . '.' . $this->join[$alias]['join_field']] = 'hidden';
         $this->pass_var($alias . '.' . $join_field, '{' . $key . '}', 'edit');
         return $this;
@@ -635,9 +655,9 @@ class Xcrud
                 $instance = Xcrud::get_instance($instance_name); // just another xcrud object
                 $instance->table($this->prefix . $inner_tbl);
                 $instance->is_inner = true; // nested flag
-                
+
                 $fdata2 = $this->_parse_field_names($tbl_field, 'nested_table', $inner_tbl);
-                
+
                 $instance->inner_where[$fitem['table'] . '.' . $fitem['field']] = key($fdata2); // this connects nested table with parent
                 return $instance; // only one cycle
             }
@@ -930,6 +950,15 @@ class Xcrud
         }
         return $this;
     }
+    public function create_field($fields = '', $type = '', $default = false, $attr = array())
+    {
+        $fdata = $this->_parse_field_names($fields, 'create_field');
+        foreach ($fdata as $fkey => $fitem)
+        {
+            $this->custom_fields[$fkey] = $fitem;
+        }
+        return $this->change_type($fields, $type, $default, $attr);
+    }
     public function pass_default($fields = '', $value = '')
     {
         $fdata = $this->_parse_field_names($fields, 'pass_default');
@@ -939,7 +968,7 @@ class Xcrud
         }
         return $this;
     }
-    public function pass_var($fields = '', $value = '', $type = 'all')
+    public function pass_var($fields = '', $value = '', $type = 'all', $eval = false)
     {
         $fdata = $this->_parse_field_names($fields, 'pass_var');
         $type = str_replace(' ', '', $type);
@@ -950,7 +979,8 @@ class Xcrud
             $pass_var = array(
                 'table' => $fitem['table'],
                 'field' => $fitem['field'],
-                'value' => isset($fitem['value']) ? $fitem['value'] : $value);
+                'value' => isset($fitem['value']) ? $fitem['value'] : $value,
+                'eval' => $eval);
             foreach ($types as $tp)
             {
                 if ($tp == 'all')
@@ -1112,54 +1142,49 @@ class Xcrud
         }
         return $this;
     }
-    public function alert($columns = '', $cc = '', $subject = '', $message = '', $link = false, $field = false, $value = false,
+    public function alert($column = '', $cc = '', $subject = '', $message = '', $link = false, $field = false, $value = false,
         $mode = 'all')
     {
-        $fdata = $this->_parse_field_names($columns, 'alert');
-        if ($field && !strpos($field, '.'))
-            $field = $this->table . '.' . $field;
 
-        foreach ($fdata as $fitem)
+        if ($cc)
         {
-            if ($cc)
-            {
-                if (!is_array($cc))
-                    $cc = $this->parse_comma_separated($cc);
-            }
-            if ($mode == 'all' or $mode == 'create')
-                $this->alert_create[] = array(
-                    'column' => $fitem['table'] . '.' . $fitem['field'],
-                    'cc' => $cc,
-                    'subject' => $subject,
-                    'message' => $message,
-                    'link' => $link,
-                    'field' => $field,
-                    'value' => $value);
-            if ($mode == 'all' or $mode == 'edit')
-                $this->alert_edit[] = array(
-                    'column' => $fitem['table'] . '.' . $fitem['field'],
-                    'cc' => $cc,
-                    'subject' => $subject,
-                    'message' => $message,
-                    'link' => $link,
-                    'field' => $field,
-                    'value' => $value);
+            if (!is_array($cc))
+                $cc = $this->parse_comma_separated($cc);
         }
+        if ($mode == 'all' or $mode == 'create')
+            $this->alert_create[] = array(
+                'column' => $column,
+                'cc' => $cc,
+                'subject' => $subject,
+                'message' => $message,
+                'link' => $link,
+                'field' => $field,
+                'value' => $value);
+        if ($mode == 'all' or $mode == 'edit')
+            $this->alert_edit[] = array(
+                'column' => $column,
+                'cc' => $cc,
+                'subject' => $subject,
+                'message' => $message,
+                'link' => $link,
+                'field' => $field,
+                'value' => $value);
         return $this;
     }
     public function alert_create($column = '', $cc = '', $subject = '', $message = '', $link = false, $field = false, $value = false)
     {
-        return $this->alert($column, $cc, $subject, $message, $link, $field, $value, $table, 'create');
+        return $this->alert($column, $cc, $subject, $message, $link, $field, $value, 'create');
     }
     public function alert_edit($column = '', $cc = '', $subject = '', $message = '', $link = false, $field = false, $value = false)
     {
-        return $this->alert($column, $cc, $subject, $message, $link, $field, $value, $table, 'edit');
+        return $this->alert($column, $cc, $subject, $message, $link, $field, $value, 'edit');
     }
+
+    // NEEDS TO BE REWRITTEN
     public function mass_alert($email_table = '', $email_column = '', $emeil_where = '', $subject = '', $message = '', $link = false,
         $field = false, $value = false, $mode = 'all')
     {
-        if (!$table)
-            $table = $this->_get_table('mass_alert');
+        $table = $this->_get_table('mass_alert');
         $field = $this->table . '.' . $field;
         if ($mode == 'all' or $mode == 'create')
             $this->mass_alert_create[] = array(
@@ -1189,14 +1214,12 @@ class Xcrud
     public function mass_alert_create($email_table = '', $email_column = '', $emeil_where = '', $subject = '', $message = '',
         $link = false, $field = false, $value = false)
     {
-        return $this->mass_alert($email_table, $email_column, $emeil_where, $subject, $message, $link, $field, $value, $table,
-            'create');
+        return $this->mass_alert($email_table, $email_column, $emeil_where, $subject, $message, $link, $field, $value, 'create');
     }
     public function mass_alert_edit($email_table = '', $email_column = '', $emeil_where = '', $subject = '', $message = '',
         $link = false, $field = false, $value = false)
     {
-        return $this->mass_alert($email_table, $email_column, $emeil_where, $subject, $message, $link, $field, $value, $table,
-            'edit');
+        return $this->mass_alert($email_table, $email_column, $emeil_where, $subject, $message, $link, $field, $value, 'edit');
     }
     public function send_external($path, $data = array(), $method = 'include', $mode = 'all', $where_field = '', $where_val =
         '')
@@ -1324,7 +1347,7 @@ class Xcrud
         return $this;
     }
 
-    public function search_columns($fields = '', $default = null)
+    public function search_columns($fields = false, $default = false)
     {
         if ($fields)
         {
@@ -1334,10 +1357,17 @@ class Xcrud
                 $this->search_columns[$fkey] = $fitem;
             }
         }
-        if ($default)
+        if ($default !== false)
         {
-            $fdata = $this->_parse_field_names($default, 'search_columns');
-            $this->search_default = key($fdata) /*$fdata[0]['table'] . '.' . $fdata[0]['field']*/;
+            if ($default == '')
+            {
+                $this->search_default = false;
+            }
+            else
+            {
+                $fdata = $this->_parse_field_names($default, 'search_columns');
+                $this->search_default = key($fdata) /*$fdata[0]['table'] . '.' . $fdata[0]['field']*/;
+            }
         }
         return $this;
     }
@@ -1581,8 +1611,7 @@ class Xcrud
             $fdata = $this->_parse_field_names($fields, 'column_tooltip');
             foreach ($fdata as $fkey => $fitem)
             {
-                $this->column_tooltip[$fkey] = array('tooltip' => $this->html_safe(isset($fitem['value']) ? $fitem['value'] : $tooltip),
-                        'icon' => $icon);
+                $this->column_tooltip[$fkey] = array('tooltip' => isset($fitem['value']) ? $fitem['value'] : $tooltip, 'icon' => $icon);
             }
 
         }
@@ -1700,6 +1729,12 @@ class Xcrud
         }
         return $this;
     }
+    public function lists_null_opt($bool = true)
+    {
+        $this->lists_null_opt = $bool;
+        return $this;
+    }
+
 
     /** public renderer, final instance method */
     public function render($task = false, $primary = false)
@@ -1717,6 +1752,7 @@ class Xcrud
         $this->_get_table_info();
         return $this->_run_task();
     }
+
     /** main task trigger */
     protected function _run_task()
     {
@@ -1783,11 +1819,6 @@ class Xcrud
                 $this->theme = 'printout';
                 return $this->_list();
                 break;
-								// tambahan excel button
-            case 'excel':
-                $this->_set_field_types('list', Xcrud_config::$csv_all_fields);
-                return $this->_csv();
-                break;
             case 'depend':
                 return $this->create_relation($this->_post('name', false, 'base64'), $this->_post('value'), $this->get_field_attr($this->
                     _post('name', false, 'base64'), 'edit'), $this->_post('dependval'));
@@ -1843,10 +1874,6 @@ class Xcrud
                 return $this->_call_action();
                 break;
             case 'csv':
-                return $this->render_custom_csv();
-                break;
-								// tambahan excel button
-            case 'excel':
                 return $this->render_custom_csv();
                 break;
             default:
@@ -2158,13 +2185,15 @@ class Xcrud
             if (trim(strtolower(strrchr($path, '.')), '.') == 'pdf')
             {
                 header("Content-type: application/pdf");
+                header("Content-Disposition: inline; filename=\"" . (isset($settings['filename']) ? $settings['filename'] : $image) . "\"");
             }
             else
             {
                 header("Content-type: application/octet-stream");
+                header("Content-Disposition: attachment; filename=\"" . (isset($settings['filename']) ? $settings['filename'] : $image) .
+                    "\"");
             }
-            header("Content-Disposition: attachment; filename=\"" . (isset($settings['filename']) ? $settings['filename'] : $image) .
-                "\"");
+
             header("Content-Transfer-Encoding: binary");
         }
         if ($blob)
@@ -2235,6 +2264,17 @@ class Xcrud
     {
         if (isset($_POST['xcrud'][$field]))
         {
+            if (get_magic_quotes_gpc())
+            {
+                if (is_array($_POST['xcrud'][$field]))
+                {
+                    array_walk_recursive($_POST['xcrud'][$field], array($this, 'stripslashes_callback'));
+                }
+                else
+                {
+                    $_POST['xcrud'][$field] == stripslashes($_POST['xcrud'][$field]);
+                }
+            }
             if (Xcrud_config::$auto_xss_filtering)
             {
                 $xss = $this->load_core_class('xss');
@@ -2289,6 +2329,17 @@ class Xcrud
     {
         if (isset($_GET['xcrud'][$field]))
         {
+            if (get_magic_quotes_gpc())
+            {
+                if (is_array($_GET['xcrud'][$field]))
+                {
+                    array_walk_recursive($_GET['xcrud'][$field], array($this, 'stripslashes_callback'));
+                }
+                else
+                {
+                    $_GET['xcrud'][$field] == stripslashes($_GET['xcrud'][$field]);
+                }
+            }
             if (Xcrud_config::$auto_xss_filtering)
             {
                 $xss = $this->load_core_class('xss');
@@ -2324,13 +2375,18 @@ class Xcrud
             return $default;
     }
 
+    protected function stripslashes_callback(&$item, $key)
+    {
+        $item = stripslashes($item);
+    }
+
 
     /** creates fieldlist for adding record */
     protected function _create($postdata = array())
     {
         if (!$this->is_create || $this->table_ro)
             return self::error('Forbidden');
-        $this->_set_field_names();
+
         $this->primary_val = null;
         $this->result_row = array_merge($this->defaults, $postdata);
 
@@ -2340,9 +2396,13 @@ class Xcrud
             include_once ($path);
             if (is_callable($this->before_create['callable']))
             {
-                call_user_func_array($this->before_create['callable'], array($this->result_row, $this));
+                $postdata = new Xcrud_postdata($this->result_row, $this);
+                call_user_func_array($this->before_create['callable'], array($postdata, $this));
+                $this->result_row = $postdata->to_array();
             }
         }
+
+        $this->_set_field_names();
 
         /** conditions process */
         if ($this->condition)
@@ -2377,7 +2437,6 @@ class Xcrud
     /** creates fieldlist for editing or viewing record */
     protected function _entry($mode = 'edit', $postdata = array())
     {
-        $this->_set_field_names();
         $this->where_pri($this->primary_key, $this->primary_val);
         $select = $this->_build_select_details($mode);
         $where = $this->_build_where();
@@ -2399,9 +2458,16 @@ class Xcrud
             include_once ($path);
             if (is_callable($this->{$callback_method}['callable']))
             {
-                call_user_func_array($this->{$callback_method}['callable'], array($this->result_row, $this));
+                $postdata = new Xcrud_postdata($this->result_row, $this);
+                call_user_func_array($this->{$callback_method}['callable'], array(
+                    $postdata,
+                    $this->primary_val,
+                    $this));
+                $this->result_row = $postdata->to_array();
             }
         }
+
+        $this->_set_field_names();
 
         /** conditions process */
         if ($this->condition)
@@ -2453,6 +2519,55 @@ class Xcrud
         return $this->_render_details($mode);
     }
 
+    protected function prepare_query_field($val, $key, $action, $no_processing = false)
+    {
+        $db = Xcrud_db::get_instance($this->connection);
+        if ($no_processing)
+        {
+            if (isset($this->no_quotes[$key]) && isset($this->pass_var[$action][$key]))
+            {
+                return $db->escape($val, true);
+            }
+            else
+            {
+                return $db->escape($val, false, $this->field_type[$key], $this->field_null[$key], isset($this->bit_field[$key]));
+            }
+        }
+        else
+        {
+            if (is_array($val))
+            {
+                return $db->escape(implode(',', $val), false, $this->field_type[$key], $this->field_null[$key], isset($this->bit_field[$key]));
+            }
+            elseif (isset($this->point_field[$key]))
+            {
+                return 'Point(' . $db->escape($val, true, 'point', $this->field_null[$key], isset($this->bit_field[$key])) . ')';
+            }
+            elseif (isset($this->int_field[$key]))
+            {
+                return $db->escape($val, false, 'int', $this->field_null[$key], isset($this->bit_field[$key]));
+            }
+            elseif (isset($this->float_field[$key]) && $this->field_type[$key] == 'price')
+            {
+                $val = $this->cast_number_format($val, $key, true);
+                return $db->escape($val, false, 'float', $this->field_null[$key], isset($this->bit_field[$key]));
+            }
+            else
+                if (isset($this->no_quotes[$key]) && isset($this->pass_var[$action][$key]))
+                {
+                    return $db->escape($val, true);
+                }
+                else
+                {
+                    if ($this->field_type[$key] == 'price')
+                    {
+                        $val = $this->cast_number_format($val, $key, true);
+                    }
+                    return $db->escape($val, false, $this->field_type[$key], $this->field_null[$key], isset($this->bit_field[$key]));
+                }
+        }
+    }
+
     /** main insert constructor */
     protected function _insert($postdata, $no_processing = false, $no_processing_fields = array())
     {
@@ -2466,7 +2581,7 @@ class Xcrud
         $fk_queries = array();
         foreach ($postdata as $key => $val)
         {
-            if (isset($fields[$key]) && !isset($this->locked_fields[$key]))
+            if (isset($fields[$key]) && !isset($this->locked_fields[$key]) && !isset($this->custom_fields[$key]))
             {
                 if (isset($this->field_type[$key]))
                 {
@@ -2482,94 +2597,44 @@ class Xcrud
                                 $val = hash($this->defaults[$key], $val);
                             }
                             break;
-                            /*case 'datetime':
-                            if ($val !== '')
-                            {
-                            if (preg_match('/^\-{0,1}[0-9]+$/u', $val))
-                            {
-                            $val = gmdate('Y-m-d H:i:s', $val);
-                            }
-                            }
-                            else
-                            {
-                            if ($this->field_null[$key])
-                            {
-                            $val = null;
-                            }
-                            else
-                            {
-                            $val = '0000-00-00 00:00:00';
-                            }
-                            }
-                            break;
-                            case 'date':
-                            if ($val !== '')
-                            {
-                            if (preg_match('/^\-{0,1}[0-9]+$/u', $val))
-                            {
-                            $val = gmdate('Y-m-d', $val);
-                            }
-                            }
-                            else
-                            {
-                            if ($this->field_null[$key])
-                            {
-                            $val = null;
-                            }
-                            else
-                            {
-                            $val = '0000-00-00';
-                            }
-                            }
-                            break;
-                            case 'time':
-                            if ($val !== '')
-                            {
-                            if (preg_match('/^\-{0,1}[0-9]+$/u', $val))
-                            {
-                            $val = gmdate('H:i:s', $val);
-                            }
-                            }
-                            else
-                            {
-                            if ($this->field_null[$key])
-                            {
-                            $val = null;
-                            }
-                            else
-                            {
-                            $val = '00:00:00';
-                            }
-                            }
-
-                            break;*/
                         case 'fk_relation': //
                             continue 2;
                             break;
                     }
                 }
-                if (is_array($val))
+
+                $set[$fields[$key]['table']]['`' . $fields[$key]['field'] . '`'] = $this->prepare_query_field($val, $key, 'create');
+
+                /*if (is_array($val))
                 {
-                    $set[$fields[$key]['table']]['`' . $fields[$key]['field'] . '`'] = $db->escape(implode(',', $val), false, $this->
-                        field_type[$key], $this->field_null[$key], isset($this->bit_field[$key]));
+                $set[$fields[$key]['table']]['`' . $fields[$key]['field'] . '`'] = $db->escape(implode(',', $val), false, $this->
+                field_type[$key], $this->field_null[$key], isset($this->bit_field[$key]));
                 }
                 elseif (isset($this->point_field[$key]))
                 {
-                    $set[$fields[$key]['table']]['`' . $fields[$key]['field'] . '`'] = 'Point(' . $db->escape($val, true, 'point', $this->
-                        field_null[$key], isset($this->bit_field[$key])) . ')';
+                $set[$fields[$key]['table']]['`' . $fields[$key]['field'] . '`'] = 'Point(' . $db->escape($val, true, 'point', $this->
+                field_null[$key], isset($this->bit_field[$key])) . ')';
+                }
+                elseif (isset($this->float_field[$key]))
+                {
+
+                }
+                elseif (isset($this->float_field[$key]))
+                {
+
                 }
                 else
-                    $set[$fields[$key]['table']]['`' . $fields[$key]['field'] . '`'] = ((isset($this->no_quotes[$key]) && isset($this->
-                        pass_var['create'][$key])) ? $db->escape($val, true) : $db->escape($val, false, $this->field_type[$key], $this->
-                        field_null[$key], isset($this->bit_field[$key])));
+                $set[$fields[$key]['table']]['`' . $fields[$key]['field'] . '`'] = ((isset($this->no_quotes[$key]) && isset($this->
+                pass_var['create'][$key])) ? $db->escape($val, true) : $db->escape($val, false, $this->field_type[$key], $this->
+                field_null[$key], isset($this->bit_field[$key])));*/
             }
             elseif ($no_processing)
             {
-                $set[$no_processing_fields[$key]['table']]['`' . $no_processing_fields[$key]['field'] . '`'] =
-                    /*$db->escape($val, false,
-                    $this->field_type[$key], $this->field_null[$key], isset($this->bit_field[$key]))*/((isset($this->no_quotes[$key]) &&
-                    isset($this->pass_var['create'][$key])) ? $db->escape($val, true) : $db->escape($val, false, $this->field_type[$key], $this->
-                    field_null[$key], isset($this->bit_field[$key])));
+                /*$set[$no_processing_fields[$key]['table']]['`' . $no_processing_fields[$key]['field'] . '`'] = ((isset($this->no_quotes[$key]) &&
+                isset($this->pass_var['create'][$key])) ? $db->escape($val, true) : $db->escape($val, false, $this->field_type[$key], $this->
+                field_null[$key], isset($this->bit_field[$key])));*/
+                $set[$no_processing_fields[$key]['table']]['`' . $no_processing_fields[$key]['field'] . '`'] = $this->
+                    prepare_query_field($val, $key, 'create', true);
             }
         }
         //$keys = array_keys($set[$this->table]);
@@ -2599,9 +2664,11 @@ class Xcrud
             foreach ($this->join as $alias => $param)
             {
                 $set[$alias]['`' . $param['join_field'] . '`'] = $set[$param['table']]['`' . $param['field'] . '`'];
-                if (!$this->demo_mode)
+                if (!$this->demo_mode && !$param['not_insert'])
+                {
                     $db->query("INSERT INTO `{$param['join_table']}` (" . implode(',', array_keys($set[$alias])) . ") VALUES (" . implode(',',
                         $set[$alias]) . ")");
+                }
             }
         }
 
@@ -2629,7 +2696,7 @@ class Xcrud
                                 $ins_add[] = $db->escape($add_val);
                             }
                         }
-                        $ins_add[] = $db->escape($in_val);
+                        $ins_add[] = /*$db->escape(*/ $in_val /*)*/;
                         $ins_keys[] = '`' . $fk['in_fk_field'] . '`';
                         $ins_keys[] = '`' . $fk['out_fk_field'] . '`';
                         foreach ($fkids as $fkid)
@@ -2668,7 +2735,7 @@ class Xcrud
         $fields = array_merge($this->fields, $this->hidden_fields);
         foreach ($postdata as $key => $val)
         {
-            if (isset($fields[$key]) && !isset($this->locked_fields[$key]))
+            if (isset($fields[$key]) && !isset($this->locked_fields[$key]) && !isset($this->custom_fields[$key]))
             {
                 if (isset($this->field_type[$key]))
                 {
@@ -2684,85 +2751,29 @@ class Xcrud
                                 $val = hash($this->defaults[$key], $val);
                             }
                             break;
-                            /*case 'datetime':
-                            if ($val !== '')
-                            {
-                            if (preg_match('/^\-{0,1}[0-9]+$/u', $val))
-                            {
-                            $val = gmdate('Y-m-d H:i:s', $val);
-                            }
-                            }
-                            else
-                            {
-                            if ($this->field_null[$key])
-                            {
-                            $val = null;
-                            }
-                            else
-                            {
-                            $val = '0000-00-00 00:00:00';
-                            }
-                            }
-                            break;
-                            case 'date':
-                            if ($val !== '')
-                            {
-                            if (preg_match('/^\-{0,1}[0-9]+$/u', $val))
-                            {
-                            $val = gmdate('Y-m-d', $val);
-                            }
-                            }
-                            else
-                            {
-                            if ($this->field_null[$key])
-                            {
-                            $val = null;
-                            }
-                            else
-                            {
-                            $val = '0000-00-00';
-                            }
-                            }
-                            break;
-                            case 'time':
-                            if ($val !== '')
-                            {
-                            if (preg_match('/^\-{0,1}[0-9]+$/u', $val))
-                            {
-                            $val = gmdate('H:i:s', $val);
-                            }
-                            }
-                            else
-                            {
-                            if ($this->field_null[$key])
-                            {
-                            $val = null;
-                            }
-                            else
-                            {
-                            $val = '00:00:00';
-                            }
-                            }
-                            break;*/
                         case 'fk_relation': //
                             continue 2;
                             break;
                     }
                 }
+                /*
                 if (is_array($val))
                 {
-                    $set[] = '`' . $fields[$key]['table'] . '`.`' . $fields[$key]['field'] . '` = ' . $db->escape(implode(',', $val), false,
-                        $this->field_type[$key], $this->field_null[$key], isset($this->bit_field[$key]));
+                $set[] = '`' . $fields[$key]['table'] . '`.`' . $fields[$key]['field'] . '` = ' . $db->escape(implode(',', $val), false,
+                $this->field_type[$key], $this->field_null[$key], isset($this->bit_field[$key]));
                 }
                 elseif (isset($this->point_field[$key]) && trim($val))
                 {
-                    $set[] = '`' . $fields[$key]['table'] . '`.`' . $fields[$key]['field'] . '` = Point(' . $db->escape($val, true, 'point',
-                        $this->field_null[$key], isset($this->bit_field[$key])) . ')';
+                $set[] = '`' . $fields[$key]['table'] . '`.`' . $fields[$key]['field'] . '` = Point(' . $db->escape($val, true, 'point',
+                $this->field_null[$key], isset($this->bit_field[$key])) . ')';
                 }
                 else
-                    $set[] = '`' . $fields[$key]['table'] . '`.`' . $fields[$key]['field'] . '` = ' . ((isset($this->no_quotes[$key]) &&
-                        isset($this->pass_var['edit'][$key])) ? $db->escape($val, true) : $db->escape(trim($val), false, $this->field_type[$key],
-                        $this->field_null[$key], isset($this->bit_field[$key])));
+                $set[] = '`' . $fields[$key]['table'] . '`.`' . $fields[$key]['field'] . '` = ' . ((isset($this->no_quotes[$key]) &&
+                isset($this->pass_var['edit'][$key])) ? $db->escape($val, true) : $db->escape(trim($val), false, $this->field_type[$key],
+                $this->field_null[$key], isset($this->bit_field[$key])));
+                */
+                $set[] = '`' . $fields[$key]['table'] . '`.`' . $fields[$key]['field'] . '` = ' . $this->prepare_query_field($val, $key,
+                    'edit');
             }
         }
         if (!$set)
@@ -2821,7 +2832,7 @@ class Xcrud
                                 $ins_add[] = $db->escape($add_val);
                             }
                         }
-                        $ins_add[] = $db->escape($in_val);
+                        $ins_add[] = /*$db->escape(*/ $in_val /*)*/;
                         $ins_keys[] = '`' . $fk['in_fk_field'] . '`';
                         $ins_keys[] = '`' . $fk['out_fk_field'] . '`';
                         foreach ($fkids as $fkid)
@@ -2928,7 +2939,10 @@ class Xcrud
                 $joins = array();
                 foreach ($this->join as $alias => $param)
                 {
-                    $tables[] = '`' . $alias . '`';
+                    if (!$param['not_insert'])
+                    {
+                        $tables[] = '`' . $alias . '`';
+                    }
                     $joins[] = "INNER JOIN `{$param['join_table']}` AS `{$alias}` 
                     ON `{$param['table']}`.`{$param['field']}` = `{$alias}`.`{$param['join_field']}`";
                 }
@@ -2982,10 +2996,16 @@ class Xcrud
         $this->primary_val = null;
         return $del;
     }
-    protected function check_postdata($postdata)
+    protected function check_postdata($postdata, $primary)
     {
+        $mode = $primary ? 'edit' : 'create';
         foreach ($postdata as $key => $val)
         {
+            if (isset($this->disabled[$key][$mode]) && !isset($this->readonly[$key][$mode]))
+            {
+                unset($postdata[$key]);
+                continue;
+            }
             if (isset($this->field_type[$key]))
             {
                 switch ($this->field_type[$key])
@@ -3070,32 +3090,9 @@ class Xcrud
             self::error('No data to save!');
         }
 
-        $postdata = $this->check_postdata($postdata);
+        $postdata = $this->check_postdata($postdata, $this->primary_val);
 
-        if ($this->upload_config)
-        {
-            foreach ($this->upload_config as $key => $opts)
-            {
-                if (isset($opts['blob']) && $opts['blob'] && isset($postdata[$key]) && $postdata[$key] != '')
-                {
-                    if ($postdata[$key] == 'blob-storage')
-                    {
-                        unset($postdata[$key]);
-                        continue;
-                    }
-                    else
-                    {
-                        $folder = $this->upload_folder[$key];
-                        $path = $folder . '/' . $postdata[$key];
-                        if (is_file($path))
-                        {
-                            $postdata[$key] = file_get_contents($path);
-                            unlink($path);
-                        }
-                    }
-                }
-            }
-        }
+
         if ($this->inner_value !== false) // is nested
         {
             $field = reset($this->inner_where);
@@ -3120,18 +3117,27 @@ class Xcrud
             {
                 foreach ($this->pass_var['create'] as $field => $param)
                 {
+                    if ($param['eval'])
+                    {
+                        $param['value'] = eval($param['value']);
+                    }
                     $postdata[$field] = $this->replace_text_variables($param['value'], $postdata);
                     $this->hidden_fields[$field] = array('table' => $param['table'], 'field' => $param['field']);
                 }
             }
+
+
+            $pd = new Xcrud_postdata($postdata, $this);
+
             if ($this->alert_create)
             {
                 foreach ($this->alert_create as $alert)
                 {
-                    if ($alert['field'] && isset($postdata[$alert['field']]) && $postdata[$alert['field']] != $alert['value'])
+                    if ($alert['field'] && $pd->get($alert['field']) != $alert['value'])
                         continue;
-                    if (!isset($postdata[$alert['column']]) or !preg_match('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/',
-                        $postdata[$alert['column']]))
+
+                    $send_to = $pd->get($alert['column']) ? $pd->get($alert['column']) : $alert['column'];
+                    if (!$send_to or !preg_match('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/', $send_to))
                         continue;
                     $alert['message'] = $this->replace_text_variables($alert['message'], $postdata);
                     if (Xcrud_config::$email_enable_html)
@@ -3139,7 +3145,7 @@ class Xcrud
                             '" target="_blank">' . $alert['link'] . '</a>' : '');
                     else
                         $message = $alert['message'] . "\r\n\r\n" . ($alert['link'] ? $alert['link'] : '');
-                    $this->send_email($postdata[$alert['column']], $alert['subject'], $message, $alert['cc'], Xcrud_config::$email_enable_html);
+                    $this->send_email($send_to, $alert['subject'], $message, $alert['cc'], Xcrud_config::$email_enable_html);
                 }
             }
             if ($this->mass_alert_create)
@@ -3164,7 +3170,7 @@ class Xcrud
                     }
                 }
             }
-            $pd = new Xcrud_postdata($postdata, $this);
+
             if ($this->before_insert)
             {
                 $path = $this->check_file($this->before_insert['path'], 'before_insert');
@@ -3179,6 +3185,9 @@ class Xcrud
                     }
                 }
             }
+
+            $this->make_upload_process($pd);
+
             if ($this->replace_insert)
             {
                 $path = $this->check_file($this->replace_insert['path'], 'replace_insert');
@@ -3214,6 +3223,9 @@ class Xcrud
                     }
                 }
             }
+
+            $this->make_upload_process($pd);
+
             if ($this->send_external_create)
             {
                 if (!$this->send_external_create['where_field'] or $postdata[$this->send_external_create['where_field']] == $this->
@@ -3294,20 +3306,26 @@ class Xcrud
                         $param['value'] = $param['tmp_value'];
                         unset($this->pass_var['edit'][$field]['tmp_value']);
                     }
+                    if ($param['eval'])
+                    {
+                        $param['value'] = eval($param['value']);
+                    }
                     $postdata[$field] = $this->replace_text_variables($param['value'], $postdata);
                     $postdata[$field] = $this->replace_text_variables($param['value'], $row);
                     $this->hidden_fields[$field] = array('table' => $param['table'], 'field' => $param['field']);
                 }
             }
 
+            $pd = new Xcrud_postdata($postdata, $this);
+
             if ($this->alert_edit)
             {
                 foreach ($this->alert_edit as $alert)
                 {
-                    if ($alert['field'] && isset($postdata[$alert['field']]) && $postdata[$alert['field']] != $alert['value'])
+                    if ($alert['field'] && $pd->get($alert['field']) != $alert['value'])
                         continue;
-                    if (!isset($postdata[$alert['column']]) or !preg_match('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/',
-                        $postdata[$alert['column']]))
+                    $send_to = $pd->get($alert['column']) ? $pd->get($alert['column']) : $alert['column'];
+                    if (!$send_to or !preg_match('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/', $send_to))
                         continue;
                     $alert['message'] = $this->replace_text_variables($alert['message'], $postdata);
                     if (Xcrud_config::$email_enable_html)
@@ -3315,7 +3333,7 @@ class Xcrud
                             '" target="_blank">' . $alert['link'] . '</a>' : '');
                     else
                         $message = $alert['message'] . "\r\n\r\n" . ($alert['link'] ? $alert['link'] : '');
-                    $this->send_email($postdata[$alert['column']], $alert['subject'], $message, $alert['cc'], Xcrud_config::$email_enable_html);
+                    $this->send_email($send_to, $alert['subject'], $message, $alert['cc'], Xcrud_config::$email_enable_html);
                 }
             }
             if ($this->mass_alert_edit)
@@ -3340,7 +3358,7 @@ class Xcrud
                     }
                 }
             }
-            $pd = new Xcrud_postdata($postdata, $this);
+
             if ($this->before_update)
             {
                 $path = $this->check_file($this->before_update['path'], 'before_update');
@@ -3479,6 +3497,7 @@ class Xcrud
     }
     protected function call_exception($postdata = array())
     {
+        $this->cancel_file_saving = true;
         switch ($this->task)
         {
             case 'upload':
@@ -3514,6 +3533,36 @@ class Xcrud
                 break;
         }
     }
+
+    protected function make_upload_process($pd)
+    {
+        if ($this->upload_config)
+        {
+            foreach ($this->upload_config as $key => $opts)
+            {
+                if (isset($opts['blob']) && $opts['blob'] && $pd->get($key))
+                {
+                    if ($pd->get($key) == 'blob-storage')
+                    {
+                        $pd->del($key);
+                        continue;
+                    }
+                    else
+                    {
+                        $folder = $this->upload_folder[$key];
+                        $path = $folder . '/' . $pd->get($key);
+                        if (is_file($path))
+                        {
+                            $pd->set(file_get_contents($path));
+                            unlink($path);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
     public function set_exception($fields = '', $message = '', $type = 'note')
     {
         if ($message)
@@ -3539,6 +3588,8 @@ class Xcrud
         }
         return $this;
     }
+
+
     /** grid processing */
     protected function _list()
     {
@@ -3546,10 +3597,10 @@ class Xcrud
         {
             return self::error('Forbidden');
         }
-        if (!$this->search_columns)
+        /*if (!$this->search_columns)
         {
-            $this->search_columns = $this->columns;
-        }
+        $this->search_columns = $this->columns;
+        }*/
         $select = $this->_build_select_list();
         $table_join = $this->_build_table_join();
         $where = $this->_build_where();
@@ -3581,7 +3632,7 @@ class Xcrud
             include_once ($path);
             if (is_callable($this->before_list['callable']))
             {
-                call_user_func_array($this->before_list['callable'], array($this->result_row, $this));
+                call_user_func_array($this->before_list['callable'], array($this->result_list, $this));
             }
         }
 
@@ -3702,13 +3753,13 @@ class Xcrud
                     {
                         foreach ($fk['rel_name'] as $tmp)
                         {
-                            $tmp_fields[] = "`{$tmp}`";
+                            $tmp_fields[] = '`' . $fk['rel_tbl'] . '`.`' . $tmp . '`';
                             $rel_name = 'CONCAT_WS(' . $db->escape($fk['rel_separator']) . ',' . implode(',', $tmp_fields) . ')';
                         }
                     }
                     else
                     {
-                        $rel_name = '`' . $fk['rel_name'] . '`';
+                        $rel_name = '`' . $fk['rel_tbl'] . '`.`' . $fk['rel_name'] . '`';
                     }
                     $columns[] = '(SELECT GROUP_CONCAT(DISTINCT ' . $rel_name . ' SEPARATOR \', \') 
                         FROM `' . $fk['rel_tbl'] . '`
@@ -3817,7 +3868,7 @@ class Xcrud
         {
             foreach ($this->fields as $key => $val)
             {
-                if ($val)
+                if ($val && !isset($this->custom_fields[$key]))
                 {
                     if (isset($this->subselect[$key]))
                     {
@@ -3965,7 +4016,8 @@ class Xcrud
             {
                 $where_arr[] = 'AND';
             }
-            if ($this->column && isset($this->search_columns[$this->column]))
+            $search_columns = $this->search_columns ? $this->search_columns : $this->columns;
+            if ($this->column && isset($search_columns[$this->column]))
             {
                 // if relation
                 if (isset($this->relation[$this->column]))
@@ -3985,15 +4037,16 @@ class Xcrud
                 }
                 elseif (isset($this->point_field[$this->column]))
                 {
-                    $fdata = $this->_parse_field_names($this->column, 'build_where');
+                    $fdata = $this->_parse_field_names($this->column, 'build_where', false, false);
                     $fitem = reset($fdata);
                     $where_arr[] = 'CONCAT(X(`' . $fitem['table'] . '`.`' . $fitem['field'] . '`),\',\',Y(`' . $fitem['table'] . '`.`' . $fitem['field'] .
                         '`))LIKE ' . $db->escape_like($this->phrase, $this->search_pattern);
                 }
                 else
                 {
-                    $fdata = $this->_parse_field_names($this->column, 'build_where');
+                    $fdata = $this->_parse_field_names($this->column, 'build_where', false, false);
                     $fitem = reset($fdata);
+                    $key = key($fdata);
                     // search via fild types
                     switch ($this->field_type[$this->column])
                     {
@@ -4038,11 +4091,31 @@ class Xcrud
 
                             break;*/
                         case 'bool':
-                            $where_arr[] = '(`' . $fitem['table'] . '`.`' . $fitem['field'] . '` = ' . ((int)$this->phrase) . ')';
+                            if (isset($this->bit_field[$key]))
+                            {
+                                $where_arr[] = 'CAST(`' . $fitem['table'] . '`.`' . $fitem['field'] . '` AS UNSIGNED) = ' . ((int)$this->phrase);
+                            }
+                            else
+                            {
+                                $where_arr[] = '(`' . $fitem['table'] . '`.`' . $fitem['field'] . '` = ' . ((int)$this->phrase) . ')';
+                            }
                             break;
                         default:
-                            $where_arr[] = '(`' . $fitem['table'] . '`.`' . $fitem['field'] . '` LIKE ' . $db->escape_like($this->phrase, $this->
-                                search_pattern) . ')';
+                            if (isset($this->point_field[$key]))
+                            {
+                                $where_arr[] = 'CONCAT(X(`' . $fitem['table'] . '`.`' . $fitem['field'] . '`),\',\',Y(`' . $fitem['table'] . '`.`' . $fitem['field'] .
+                                    '`)) LIKE ' . $db->escape_like($this->phrase, $this->search_pattern);
+                            }
+                            elseif (isset($this->bit_field[$key]))
+                            {
+                                $where_arr[] = 'CAST(`' . $fitem['table'] . '`.`' . $fitem['field'] . '` AS UNSIGNED) LIKE ' . $db->escape_like($this->
+                                    phrase, $this->search_pattern);
+                            }
+                            else
+                            {
+                                $where_arr[] = '(`' . $fitem['table'] . '`.`' . $fitem['field'] . '` LIKE ' . $db->escape_like($this->phrase, $this->
+                                    search_pattern) . ')';
+                            }
                             break;
                     }
                 }
@@ -4052,7 +4125,8 @@ class Xcrud
                 // multicolumn search
                 //$f_array = array();
                 $or_array = array();
-                foreach ($this->search_columns as $key => $fitem)
+                //$search_columns = $this->search_columns ? $this->search_columns : $this->columns;
+                foreach ($search_columns as $key => $fitem)
                 {
                     if (isset($this->relation[$key]))
                     {
@@ -4065,6 +4139,25 @@ class Xcrud
                     elseif (isset($this->subselect[$key]))
                     {
                         $or_array[] = '(' . $this->subselect_query[$key] . ') LIKE ' . $db->escape_like($this->phrase, $this->search_pattern);
+                    }
+                    elseif ($this->field_type[$key] == 'date' || $this->field_type[$key] == 'datetime' || $this->field_type[$key] ==
+                        'timestamp' || $this->field_type[$key] == 'time')
+                    {
+                        if (preg_match('/^[0-9\-\:\s]+$/', $this->phrase))
+                        {
+                            $or_array[] = '`' . $fitem['table'] . '`.`' . $fitem['field'] . '` LIKE ' . $db->escape_like($this->phrase, $this->
+                                search_pattern);
+                        }
+                    }
+                    elseif (isset($this->point_field[$key]))
+                    {
+                        $or_array[] = 'CONCAT(X(`' . $fitem['table'] . '`.`' . $fitem['field'] . '`),\',\',Y(`' . $fitem['table'] . '`.`' . $fitem['field'] .
+                            '`)) LIKE ' . $db->escape_like($this->phrase, $this->search_pattern);
+                    }
+                    elseif (isset($this->bit_field[$key]))
+                    {
+                        $or_array[] = 'CAST(`' . $fitem['table'] . '`.`' . $fitem['field'] . '` AS UNSIGNED) LIKE ' . $db->escape_like($this->
+                            phrase, $this->search_pattern);
                     }
                     else
                     {
@@ -4207,13 +4300,13 @@ class Xcrud
         {
             foreach ($fk['rel_name'] as $tmp)
             {
-                $tmp_fields[] = "`{$tmp}`";
+                $tmp_fields[] = '`' . $fk['rel_tbl'] . '`.`' . $tmp . '`';
                 $rel_name = 'CONCAT_WS(' . $db->escape($fk['rel_separator']) . ',' . implode(',', $tmp_fields) . ')';
             }
         }
         else
         {
-            $rel_name = '`' . $fk['rel_name'] . '`';
+            $rel_name = '`' . $fk['rel_tbl'] . '`.`' . $fk['rel_name'] . '`';
         }
         $select = '(SELECT GROUP_CONCAT(DISTINCT ' . $rel_name . ' SEPARATOR \', \') 
             FROM `' . $fk['rel_tbl'] . '`
@@ -4328,15 +4421,17 @@ class Xcrud
         else
         {
             $this->order_column = $this->_post('orderby', false, 'key');
+            //var_dump($this->order_column);
             $this->order_direct = $this->_post('order') == 'desc' ? 'desc' : 'asc';
             if ($this->order_column)
             {
                 if (!$this->query)
-                    $this->order_column = key($this->_parse_field_names($this->order_column, 'receive_post'));
+                    $this->order_column = key($this->_parse_field_names($this->order_column, 'receive_post', false, false));
                 if (isset($this->order_by[$this->order_column]))
                     unset($this->order_by[$this->order_column]);
                 $this->order_by = array_merge(array($this->order_column => $this->order_direct), $this->order_by);
             }
+            //var_dump($this->order_column);
 
             $this->search = $this->_post('search', $this->search, 'int');
             if ($this->search)
@@ -4363,8 +4458,12 @@ class Xcrud
                 {
                     $order_arr[] = $field;
                 }
+                elseif (isset($this->relation[$field]))
+                {
+                    $order_arr[] = '`rel.' . $field . '` ' . $direction;
+                }
                 elseif (isset($this->subselect[$field]) or isset($this->columns[$field]) or isset($this->no_select[$field]) or !strpos($field,
-                    '.'))
+                    '.') or isset($this->fk_relation[$field]))
                 {
                     $order_arr[] = '`' . $field . '` ' . $direction;
                 }
@@ -4400,7 +4499,10 @@ class Xcrud
             return "LIMIT {$this->start},{$this->limit}";
         }
         else
+        {
+            $this->start = 0;
             return '';
+        }
     }
     /** informatiuon about table columns */
     protected function _get_table_info()
@@ -4442,6 +4544,10 @@ class Xcrud
                     }
 
                     $this->field_null[$field_index] = $row['Null'] == 'YES' ? true : false;
+                    if (!$this->field_null[$field_index] && Xcrud_config::$not_null_is_required && !isset($this->validation_required[$field_index]))
+                    {
+                        $this->validation_required[$field_index] = 1;
+                    }
                     if ($row['Type'] == 'point')
                     {
                         $this->point_field[$field_index] = true;
@@ -4546,6 +4652,11 @@ class Xcrud
             }
             else
             {
+                if ($mode !== 'view' && $mode != 'list')
+                {
+                    $fields = array_merge($fields, $this->custom_fields);
+                }
+
                 $fk_before = array();
                 if ($this->fk_relation)
                 {
@@ -4738,10 +4849,6 @@ class Xcrud
             $type = strtolower($row['Type']);
             $max_l = null;
         }
-        if ($type == 'bit')
-        {
-            $this->bit_field[$field_index] = 1;
-        }
         if (!isset($this->field_attr[$field_index]))
         {
             $this->field_attr[$field_index] = array();
@@ -4750,10 +4857,6 @@ class Xcrud
         {
             $this->field_attr[$field_index]['maxlength'] = (int)$max_l;
         }
-        if (isset($this->field_type[$field_index]))
-        {
-            return;
-        }
 
         switch ($type)
         {
@@ -4761,6 +4864,19 @@ class Xcrud
             case 'bit':
             case 'bool':
             case 'boolean':
+                if ($type == 'bit')
+                {
+                    $this->bit_field[$field_index] = 1;
+                }
+                else
+                {
+                    $this->int_field[$field_index] = 1;
+                }
+
+                if (isset($this->field_type[$field_index]))
+                {
+                    return;
+                }
                 if ($max_l == 1 && Xcrud_config::$make_checkbox)
                 {
                     $this->field_type[$field_index] = 'bool';
@@ -4780,6 +4896,11 @@ class Xcrud
             case 'int':
             case 'bigint':
             case 'serial':
+                $this->int_field[$field_index] = 1;
+                if (isset($this->field_type[$field_index]))
+                {
+                    return;
+                }
                 $this->field_type[$field_index] = 'int';
                 //$this->field_attr[$field_index]['maxlength'] = (int)$max_l;
                 if (!isset($this->defaults[$field_index]))
@@ -4790,6 +4911,11 @@ class Xcrud
             case 'float':
             case 'double':
             case 'real':
+                $this->float_field[$field_index] = 1;
+                if (isset($this->field_type[$field_index]))
+                {
+                    return;
+                }
                 $this->field_type[$field_index] = 'float';
                 //if ($max_l)
                 //    $this->field_attr[$field_index]['maxlength'] = (int)$max_l + 1;
@@ -4801,6 +4927,11 @@ class Xcrud
             case 'binary':
             case 'varbinary':
             default:
+                $this->text_field[$field_index] = 1;
+                if (isset($this->field_type[$field_index]))
+                {
+                    return;
+                }
                 $this->field_type[$field_index] = 'text';
                 //$this->field_attr[$field_index]['maxlength'] = (int)$max_l;
                 if (!isset($this->defaults[$field_index]))
@@ -4810,6 +4941,11 @@ class Xcrud
             case 'tinytext':
             case 'mediumtext':
             case 'longtext':
+                $this->text_field[$field_index] = 1;
+                if (isset($this->field_type[$field_index]))
+                {
+                    return;
+                }
                 if (!isset($this->no_editor[$field_index]) && Xcrud_config::$auto_editor_insertion)
                     $this->field_type[$field_index] = 'texteditor';
                 else
@@ -4821,16 +4957,28 @@ class Xcrud
             case 'tinyblob':
             case 'mediumblob':
             case 'longblob':
+                if (isset($this->field_type[$field_index]))
+                {
+                    return;
+                }
                 $this->field_type[$field_index] = 'binary';
                 $this->defaults[$field_index] = '';
                 break;
             case 'date':
+                if (isset($this->field_type[$field_index]))
+                {
+                    return;
+                }
                 $this->field_type[$field_index] = 'date';
                 if (!isset($this->defaults[$field_index]))
                     $this->defaults[$field_index] = $row['Default'];
                 break;
             case 'datetime':
             case 'timestamp':
+                if (isset($this->field_type[$field_index]))
+                {
+                    return;
+                }
                 $this->field_type[$field_index] = 'datetime';
                 if (!isset($this->defaults[$field_index]))
                 {
@@ -4846,28 +4994,48 @@ class Xcrud
                 }
                 break;
             case 'time':
+                if (isset($this->field_type[$field_index]))
+                {
+                    return;
+                }
                 $this->field_type[$field_index] = 'time';
                 if (!isset($this->defaults[$field_index]))
                     $this->defaults[$field_index] = $row['Default'];
                 break;
             case 'year':
+                if (isset($this->field_type[$field_index]))
+                {
+                    return;
+                }
                 $this->field_type[$field_index] = 'year';
                 if (!isset($this->defaults[$field_index]))
                     $this->defaults[$field_index] = $row['Default'];
                 break;
             case 'enum':
+                if (isset($this->field_type[$field_index]))
+                {
+                    return;
+                }
                 $this->field_type[$field_index] = Xcrud_config::$enum_as_radio ? 'radio' : 'select';
                 $this->field_attr[$field_index]['values'] = $max_l;
                 if (!isset($this->defaults[$field_index]))
                     $this->defaults[$field_index] = $row['Default'];
                 break;
             case 'set':
+                if (isset($this->field_type[$field_index]))
+                {
+                    return;
+                }
                 $this->field_type[$field_index] = Xcrud_config::$set_as_checkboxes ? 'checkboxes' : 'multiselect';
                 $this->field_attr[$field_index]['values'] = $max_l;
                 if (!isset($this->defaults[$field_index]))
                     $this->defaults[$field_index] = $row['Default'];
                 break;
             case 'point':
+                if (isset($this->field_type[$field_index]))
+                {
+                    return;
+                }
                 $this->field_type[$field_index] = 'point';
                 $this->field_attr[$field_index] = array( // defaults
                     'text' => Xcrud_config::$default_text,
@@ -5007,6 +5175,10 @@ class Xcrud
         {
             foreach ($this->fields as $field => $fitem)
             {
+                if (isset($this->custom_fields[$field]))
+                {
+                    $this->result_row[$field] = $this->defaults[$field];
+                }
                 if ($this->field_type[$field] == 'hidden')
                 {
                     $this->hidden_fields_output[$field] = $this->create_hidden($field, $this->result_row[$field]);
@@ -5275,7 +5447,7 @@ class Xcrud
         }
         $strip_string = trim(strip_tags($string));
         $slen = mb_strlen($strip_string, Xcrud_config::$mbencoding);
-        if ($slen <= $len)
+        if ($slen <= $len || (Xcrud_config::$print_full_texts && $this->theme == 'printout'))
         {
             return $this->output_string($string, $this->strip_tags, $safe);
         }
@@ -5338,14 +5510,14 @@ class Xcrud
         // session auto-clearing, must start on first instance
         if ($this->instance_count == 1 && !$this->ajax_request)
         {
-            if (isset($_SESSION['xcrud_session']) && $_SESSION['xcrud_session'])
+            if (isset($_SESSION['lists']['xcrud_session']) && $_SESSION['lists']['xcrud_session'])
             {
-                foreach ($_SESSION['xcrud_session'] as $s_key => $s_val)
+                foreach ($_SESSION['lists']['xcrud_session'] as $s_key => $s_val)
                 { // workaround on some servers session duplication
                     $old_time = isset($s_val['time']) ? (int)$s_val['time'] : 0;
                     if ($time > $old_time + Xcrud_config::$autoclean_timeout) // autocleaner
 
-                        unset($_SESSION['xcrud_session'][$s_key]);
+                        unset($_SESSION['lists']['xcrud_session'][$s_key]);
                 }
             }
         }
@@ -5353,31 +5525,31 @@ class Xcrud
 
         foreach ($this->params2save() as $item)
         {
-            $_SESSION['xcrud_session'][$inst_name][$item] = $this->{$item};
+            $_SESSION['lists']['xcrud_session'][$inst_name][$item] = $this->{$item};
         }
-        $_SESSION['xcrud_session'][$inst_name]['before'] = $this->find_prev_task();
+        $_SESSION['lists']['xcrud_session'][$inst_name]['before'] = $this->find_prev_task();
 
         if (Xcrud_config::$alt_session)
         {
-            $data = $this->encrypt($_SESSION['xcrud_session']);
+            $data = $this->encrypt($_SESSION['lists']['xcrud_session']);
 
             if (class_exists('Memcache'))
             {
                 $mc = new Memcache();
                 $mc->connect(Xcrud_config::$mc_host, Xcrud_config::$mc_port);
-                $res = $mc->set($this->sess_id, $data, false, Xcrud_config::$alt_lifetime * 60);
+                $res = $mc->set(self::$sess_id, $data, false, Xcrud_config::$alt_lifetime * 60);
             }
             elseif (class_exists('Memcached'))
             {
                 $mc = new Memcached();
                 $mc->connect(Xcrud_config::$mc_host, Xcrud_config::$mc_port);
-                $res = $mc->set($this->sess_id, $data, Xcrud_config::$alt_lifetime * 60);
+                $res = $mc->set(self::$sess_id, $data, Xcrud_config::$alt_lifetime * 60);
             }
             else
             {
                 self::error('Can\'t use alternative session. Memcache(d) is not available');
             }
-            unset($_SESSION['xcrud_session']);
+            unset($_SESSION['lists']['xcrud_session']);
             if (!$res)
             {
                 self::error('Can\'t use alternative session. Memcache(d) has invalid parameters or broken. Storing failed');
@@ -5516,7 +5688,10 @@ class Xcrud
             'before_list',
             'before_create',
             'before_edit',
-            'before_view');
+            'before_view',
+            'lists_null_opt',
+            'custom_fields',
+            'date_format');
     }
 
     protected function find_prev_task()
@@ -5546,13 +5721,13 @@ class Xcrud
             {
                 $mc = new Memcache();
                 $mc->connect(Xcrud_config::$mc_host, Xcrud_config::$mc_port);
-                $data = $mc->get($this->sess_id);
+                $data = $mc->get(self::$sess_id);
             }
             elseif (class_exists('Memcached'))
             {
                 $mc = new Memcached();
                 $mc->connect(Xcrud_config::$mc_host, Xcrud_config::$mc_port);
-                $data = $mc->get($this->sess_id);
+                $data = $mc->get(self::$sess_id);
             }
             else
             {
@@ -5562,9 +5737,9 @@ class Xcrud
             {
                 self::error('Can\'t use alternative session. Data is not exist');
             }
-            $_SESSION['xcrud_session'] = $this->decrypt($data[0], $data[1]);
+            $_SESSION['lists']['xcrud_session'] = $this->decrypt($data[0], $data[1]);
             unset($data);
-            if (!$_SESSION['xcrud_session'])
+            if (!$_SESSION['lists']['xcrud_session'])
             {
                 self::error('Can\'t use alternative session. Data is invalid');
             }
@@ -5574,7 +5749,7 @@ class Xcrud
 
         foreach ($this->params2save() as $item)
         {
-            $this->{$item} = $_SESSION['xcrud_session'][$inst_name][$item];
+            $this->{$item} = $_SESSION['lists']['xcrud_session'][$inst_name][$item];
         }
 
         if ($key)
@@ -5697,7 +5872,7 @@ class Xcrud
             'tag' => 'input',
             'type' => 'text',
             'data-type' => 'price',
-            'value' => number_format($value ? $value : 0, $this->field_attr[$name]['decimals'], '.', ''),
+            'value' => $this->cast_number_format($value, $name, true),
             'name' => $name,
             'data-pattern' => 'numeric');
 
@@ -5706,10 +5881,7 @@ class Xcrud
     protected function create_view_price($name, $value = '', $tag = array())
     {
         $out = '';
-        $out .= $this->html_safe($this->field_attr[$name]['prefix']);
-        $out .= number_format($value ? $value : 0, $this->field_attr[$name]['decimals'], $this->field_attr[$name]['point'], $this->
-            html_safe($this->field_attr[$name]['separator']));
-        $out .= $this->html_safe($this->field_attr[$name]['suffix']);
+        $out .= $this->cast_number_format($value, $name);
         return $out;
     }
     protected function create_text($name, $value = '', $tag = array())
@@ -6257,7 +6429,8 @@ class Xcrud
                 foreach ($this->relation[$name]['rel_where'] as $field => $val)
                 {
                     $val = $this->replace_text_variables($val, $this->result_row);
-                    $fitem = reset($this->_parse_field_names($field, 'create_relation', $this->relation[$name]['rel_tbl']));
+                    $fdata = $this->_parse_field_names($field, 'create_relation', $this->relation[$name]['rel_tbl']);
+                    $fitem = reset($fdata);
                     $where_arr[] = $this->_where_field($fitem) . $this->_cond_from_where($field) . $db->escape($val);
                 }
             }
@@ -6276,7 +6449,7 @@ class Xcrud
         if ($this->relation[$name]['depend_on'] && $dependval === false)
         {
             $options = false;
-            if (Xcrud_config::$lists_null_opt)
+            if ($this->lists_null_opt)
             {
                 foreach ($values as $val)
                 {
@@ -6307,7 +6480,7 @@ class Xcrud
                 get_relation_tree_fields($this->relation[$name]) . ' FROM `' . $this->relation[$name]['rel_tbl'] . '` ' . $where .
                 ' GROUP BY `field` ORDER BY ' . $this->get_relation_ordering($this->relation[$name]));
             $options = $this->resort_relation_opts($db->result(), $this->relation[$name]);
-            if (Xcrud_config::$lists_null_opt)
+            if ($this->lists_null_opt)
             {
                 $out .= $this->open_tag(array('tag' => 'option', 'value' => '')) . $this->lang('null_option') . $this->close_tag('option');
             }
@@ -6330,6 +6503,10 @@ class Xcrud
     }
     protected function create_view_relation($name, $value = '', $tag = array(), $dependval = false)
     {
+        if ($value === null || $value === '')
+        {
+            return '';
+        }
         $db = Xcrud_db::get_instance($this->connection);
         if (is_array($this->relation[$name]['rel_name']))
         {
@@ -6365,13 +6542,13 @@ class Xcrud
     }
     protected function get_relation_ordering($rel)
     {
-        if ($rel['tree'] && $rel['tree']['left_key'] && $rel['tree']['level_key'])
+        if ($rel['tree'] && isset($rel['tree']['left_key']) && isset($rel['tree']['level_key']))
         {
             return '`' . $rel['tree']['left_key'] . '` ASC';
         }
-        elseif ($rel['tree'] && $rel['tree']['parent_key'])
+        elseif ($rel['tree'] && isset($rel['tree']['parent_key']) && isset($rel['tree']['primary_key']))
         {
-            return '`' . $rel['tree']['parent_key'] . '` ASC, ' . ($rel['order_by'] ? $rel['order_by'] : '`name` ASC');
+            return ($rel['order_by'] ? $rel['order_by'] : '`name` ASC');
         }
         elseif ($rel['order_by'])
         {
@@ -6382,20 +6559,20 @@ class Xcrud
     }
     protected function get_relation_tree_fields($rel)
     {
-        if ($rel['tree'] && $rel['tree']['left_key'] && $rel['tree']['level_key'])
+        if ($rel['tree'] && isset($rel['tree']['left_key']) && isset($rel['tree']['level_key']))
         {
             return ',`' . $rel['tree']['left_key'] . '`,`' . $rel['tree']['level_key'] . '`';
         }
-        elseif ($rel['tree'] && $rel['tree']['parent_key'])
+        elseif ($rel['tree'] && isset($rel['tree']['parent_key']) && isset($rel['tree']['primary_key']))
         {
-            return ',`' . $rel['tree']['parent_key'] . '` AS `pk`';
+            return ',`' . $rel['tree']['parent_key'] . '` AS `pk`, `' . $rel['tree']['primary_key'] . '` AS `pri`';
         }
         else
             return '';
     }
     protected function resort_relation_opts($options, $rel)
     {
-        if ($rel['tree'] && $rel['tree']['left_key'] && $rel['tree']['level_key'])
+        if ($rel['tree'] && isset($rel['tree']['left_key']) && isset($rel['tree']['level_key']))
         {
             foreach ($options as $key => $opt)
             {
@@ -6411,22 +6588,17 @@ class Xcrud
                 $options[$key]['name'] = $out;
             }
         }
-        elseif ($rel['tree'] && $rel['tree']['parent_key'])
+        elseif ($rel['tree'] && isset($rel['tree']['parent_key']) && isset($rel['tree']['primary_key']))
         {
             $opts_multiarr = array();
-            $options = array_reverse($options);
             foreach ($options as $key => $opt)
             {
                 $opt['children'] = array();
-                $opts_multiarr[$opt['id']] = $opt;
+                $opts_multiarr[] = $opt;
             }
-            foreach ($opts_multiarr as $id => $opt)
+            foreach ($opts_multiarr as $key => $opt)
             {
-                if (isset($opts_multiarr[$opt['pk']]))
-                {
-                    array_unshift($opts_multiarr[$opt['pk']]['children'], $opt);
-                    unset($opts_multiarr[$id]);
-                }
+                $this->recursive_push($opts_multiarr, $opts_multiarr[$key]);
             }
             $new_opts = array();
             $this->recursive_opts($new_opts, $opts_multiarr, 0);
@@ -6434,11 +6606,34 @@ class Xcrud
         }
         return $options;
     }
+    protected function recursive_push(&$options, &$insert)
+    {
+        foreach ($options as $key => $opt)
+        {
+            if (!$opt)
+            {
+                continue;
+            }
+            if ($opt['pri'] == $insert['pk'])
+            {
+                $options[$key]['children'][] = $insert;
+                $insert = null;
+            }
+            elseif ($options[$key]['children'])
+            {
+                $this->recursive_push($options[$key]['children'], $insert);
+            }
+        }
+    }
     protected function recursive_opts(&$options, $array, $level)
     {
         $level = $level + 1;
         foreach ($array as $opt)
         {
+            if (!$opt)
+            {
+                continue;
+            }
             $out = '';
             for ($i = 1; $i < $level; ++$i)
             {
@@ -6526,7 +6721,7 @@ class Xcrud
             ' GROUP BY `field` ORDER BY ' . $order_by);
         $options = $db->result();
 
-        if (Xcrud_config::$lists_null_opt)
+        if ($this->lists_null_opt)
         {
             $out .= $this->open_tag(array('tag' => 'option', 'value' => '')) . $this->lang('null_option') . $this->close_tag('option');
         }
@@ -6553,8 +6748,9 @@ class Xcrud
         {
             return 'Restricted.';
         }
-        
-        if(!$value){
+
+        if (!$value)
+        {
             return '';
         }
 
@@ -6631,7 +6827,8 @@ class Xcrud
             }
 
             $attr = array(
-                'href' => $this->file_link($name, $this->primary_val),
+                'href' => (isset($this->upload_config[$name]['url']) ? $this->real_file_link($value, $this->upload_config[$name], true) :
+                    $this->file_link($name, $this->primary_val)),
                 'class' => 'xcrud-file-name xcrud-' . $ext,
                 'target' => '_blank');
 
@@ -6721,7 +6918,8 @@ class Xcrud
             'data-field' => $name,
             'class' => 'xcrud-upload',
             'accept' => 'image/jpeg,image/png,image/gif',
-            'name' => 'xcrud-attach');
+            'name' => 'xcrud-attach',
+            'capture' => 'camera');
         if (isset($tag['data-required']) && !$value)
         {
             $attr['data-required'] = '';
@@ -6769,7 +6967,8 @@ class Xcrud
                 $ext = trim(strtolower(strrchr($value, '.')), '.');
             }
             $attr = array(
-                'href' => $this->file_link($name, $this->primary_val),
+                'href' => isset($this->upload_config[$name]['url']) ? $this->real_file_link($value, $this->upload_config[$name], true) :
+                    $this->file_link($name, $this->primary_val),
                 'class' => 'xcrud-file xcrud-' . $ext,
                 'target' => '_blank');
             $out .= $this->open_tag('span', 'xcrud-file-name');
@@ -6804,8 +7003,9 @@ class Xcrud
             {
 
             }
-            $attr = array('src' => $this->file_link($name, $this->primary_val, (isset($this->upload_config[$name]['detail_thumb']) ?
-                    $this->upload_config[$name]['detail_thumb'] : false), false, $value), 'alt' => '');
+            $attr = array('src' => isset($this->upload_config[$name]['url']) ? $this->real_file_link($value, $this->upload_config[$name], true) :
+                    $this->file_link($name, $this->primary_val, (isset($this->upload_config[$name]['detail_thumb']) ? $this->upload_config[$name]['detail_thumb'] : false), false,
+                    $value), 'alt' => '');
             $out .= $this->single_tag('img', $this->theme_config('image'), $attr);
 
             if (!isset($tag['readonly']) && !isset($tag['disabled']))
@@ -6853,8 +7053,9 @@ class Xcrud
             {
 
             }*/
-            $attr = array('src' => $this->file_link($name, $this->primary_val, (isset($this->upload_config[$name]['detail_thumb']) ?
-                    $this->upload_config[$name]['detail_thumb'] : false), false, $value), 'alt' => '');
+            $attr = array('src' => isset($this->upload_config[$name]['url']) ? $this->real_file_link($value, $this->upload_config[$name], true) :
+                    $this->file_link($name, $this->primary_val, (isset($this->upload_config[$name]['detail_thumb']) ? $this->upload_config[$name]['detail_thumb'] : false), false,
+                    $value), 'alt' => '');
             $out .= $this->single_tag('img', $this->theme_config('image'), $attr);
         }
         else
@@ -6987,7 +7188,7 @@ class Xcrud
         {
             $out .= $this->single_tag($search, $this->theme_config('point_search'));
         }
-        $out .= $this->open_tag($map, $this->theme_config('point_map'));
+        $out .= $this->open_tag($map, $this->theme_config('point_map')) . $this->close_tag($map);
 
         return $out;
     }
@@ -7073,6 +7274,11 @@ class Xcrud
         $oldfile = $this->_post('oldfile', 0);
         if (isset($_FILES) && isset($_FILES['xcrud-attach']) && !$_FILES['xcrud-attach']['error'])
         {
+            $file = $_FILES['xcrud-attach'];
+            $this->check_file_folders($field);
+            $filename = $this->safe_file_name($file, $field);
+            $filename = $this->get_filename_noconfict($filename, $field);
+
             if ($this->before_upload)
             {
                 $path = $this->check_file($this->before_upload['path'], 'before_upload');
@@ -7082,6 +7288,7 @@ class Xcrud
                 {
                     call_user_func_array($callable, array(
                         $field,
+                        $filename,
                         $this->upload_config[$field],
                         $this));
                     if ($this->exception)
@@ -7092,10 +7299,7 @@ class Xcrud
                     }
                 }
             }
-            $file = $_FILES['xcrud-attach'];
-            $this->check_file_folders($field);
-            $filename = $this->safe_file_name($file, $field);
-            $filename = $this->get_filename_noconfict($filename, $field);
+
             $this->save_file($file, $filename, $field);
             if ($this->exception)
             {
@@ -7120,6 +7324,11 @@ class Xcrud
         $oldfile = $this->_post('oldfile', 0);
         if (isset($_FILES) && isset($_FILES['xcrud-attach']) && !$_FILES['xcrud-attach']['error'])
         {
+            $file = $_FILES['xcrud-attach'];
+            $this->check_file_folders($field);
+            $filename = $this->safe_file_name($file, $field);
+            $filename = $this->get_filename_noconfict($filename, $field);
+
             if ($this->before_upload)
             {
                 $path = $this->check_file($this->before_upload['path'], 'before_upload');
@@ -7140,10 +7349,7 @@ class Xcrud
                     return $out;
                 }
             }
-            $file = $_FILES['xcrud-attach'];
-            $this->check_file_folders($field);
-            $filename = $this->safe_file_name($file, $field);
-            $filename = $this->get_filename_noconfict($filename, $field);
+
             if ($oldfile != $filename)
                 $this->upload_to_remove[$oldfile] = $field;
             $this->upload_to_save[$filename] = $field;
@@ -7436,50 +7642,57 @@ class Xcrud
     }
     protected function _remove_and_save_uploads()
     {
-        switch ($this->task)
+        if (!$this->cancel_file_saving)
         {
-            case 'save':
-                if (!$this->demo_mode)
-                {
-                    if ($this->upload_to_remove)
+            switch ($this->task)
+            {
+                case 'save':
+                    if (!$this->demo_mode)
                     {
-                        foreach ($this->upload_to_remove as $file => $field)
+                        if ($this->upload_to_remove)
                         {
-                            if ($file)
+                            foreach ($this->upload_to_remove as $file => $field)
                             {
-                                $this->remove_file($file, $field);
+                                if ($file)
+                                {
+                                    $this->remove_file($file, $field);
+                                }
                             }
                         }
                     }
-                }
-                $this->upload_to_save = array();
-                $this->upload_to_remove = array();
-                break;
-            case 'list':
-            case 'create':
-            case 'edit':
-            case 'view':
-            case '':
-                if ($this->upload_to_save)
-                {
-                    foreach ($this->upload_to_save as $file => $field)
+                    $this->upload_to_save = array();
+                    $this->upload_to_remove = array();
+                    break;
+                case 'list':
+                case 'create':
+                case 'edit':
+                case 'view':
+                case '':
+                    if ($this->upload_to_save)
                     {
-                        $this->remove_file($file, $field);
-                    }
-                    $f_bak = array();
-                    foreach ($this->upload_to_remove as $file => $field)
-                    {
-                        if (!isset($f_bak[$field]))
+                        foreach ($this->upload_to_save as $file => $field)
                         {
-                            $f_bak[$field] = true;
-                            continue;
+                            $this->remove_file($file, $field);
                         }
-                        $this->remove_file($file, $field);
+                        $f_bak = array();
+                        foreach ($this->upload_to_remove as $file => $field)
+                        {
+                            if (!isset($f_bak[$field]))
+                            {
+                                $f_bak[$field] = true;
+                                continue;
+                            }
+                            $this->remove_file($file, $field);
+                        }
                     }
-                }
-                $this->upload_to_save = array();
-                $this->upload_to_remove = array();
-                break;
+                    $this->upload_to_save = array();
+                    $this->upload_to_remove = array();
+                    break;
+            }
+        }
+        else
+        {
+            $this->cancel_file_saving = false;
         }
     }
     protected function _image_resize($src_file, $dest_file, $new_size_w = false, $new_size_h = false, $dest_qual = 92, $watermark = false,
@@ -7882,6 +8095,8 @@ class Xcrud
             case 3:
                 imagealphablending($dstHandle, false);
                 imagesavealpha($dstHandle, true);
+                $transparent_color = imagecolorallocatealpha($dstHandle, 0, 0, 0, 127);
+                imagefill($dstHandle, 0, 0, $transparent_color);
                 break;
         }
         imagecopy($dstHandle, $srcHandle, 0, 0, 0, 0, $srcWidth, $srcHeight);
@@ -8298,10 +8513,7 @@ class Xcrud
                     }
                     break;
                 case 'price':
-                    $out .= $this->field_attr[$field]['prefix'];
-                    $out .= number_format($value ? $value : 0, (int)$this->field_attr[$field]['decimals'], $this->field_attr[$field]['point'],
-                        $this->field_attr[$field]['separator']);
-                    $out .= $this->field_attr[$field]['suffix'];
+                    $out .= $this->cast_number_format($value, $field);
                     break;
                 case 'bool':
                     $out .= $value ? $this->lang('bool_on') : $this->lang('bool_off');
@@ -8309,7 +8521,8 @@ class Xcrud
                 case 'file':
                     if ($value)
                     {
-                        $out .= $this->open_tag('a', '', array('target' => '_blank', 'href' => $this->file_link($field, $primary_val)));
+                        $out .= $this->open_tag('a', '', array('target' => '_blank', 'href' => isset($this->upload_config[$field]['url']) ? $this->
+                                real_file_link($value, $this->upload_config[$field]) : $this->file_link($field, $primary_val)));
 
                         if (isset($this->upload_config[$field]['text']))
                         {
@@ -8347,18 +8560,20 @@ class Xcrud
                             }
                             $out .= $this->single_tag('img', '', array(
                                 'alt' => '',
-                                'src' => $this->file_link($field, $primary_val, $thumb, false, $value),
+                                'src' => isset($this->upload_config[$field]['url']) ? $this->real_file_link($value, $this->upload_config[$field]) : $this->
+                                    file_link($field, $primary_val, $thumb, false, $value),
                                 'style' => 'max-height: ' . Xcrud_config::$images_in_grid_height . 'px;'));
                         }
                         else
                         {
-                            $out .= $this->open_tag('a', '', array('target' => '_blank', 'href' => $this->file_link($field, $primary_val, false, false,
-                                    $value)));
+                            $out .= $this->open_tag('a', '', array('target' => '_blank', 'href' => isset($this->upload_config[$field]['url']) ? $this->
+                                    real_file_link($value, $this->upload_config[$field]) : $this->file_link($field, $primary_val, false, false, $value)));
                             $out .= isset($this->upload_config[$field]['text']) ? $this->upload_config[$field]['text'] : $value;
                             $out .= $this->close_tag('a');
                         }
                     }
-                    $image = $this->file_link($field, $primary_val, false, false, $value);
+                    $image = isset($this->upload_config[$field]['url']) ? $this->real_file_link($value, $this->upload_config[$field]) : $this->
+                        file_link($field, $primary_val, false, false, $value);
                     break;
                 case 'remote_image':
                     if ($value)
@@ -8501,10 +8716,7 @@ class Xcrud
                     }
                     break;
                 case 'price':
-                    $out .= $this->field_attr[$field]['prefix'];
-                    $out .= number_format($value ? $value : 0, (int)$this->field_attr[$field]['decimals'], $this->field_attr[$field]['point'],
-                        $this->field_attr[$field]['separator']);
-                    $out .= $this->field_attr[$field]['suffix'];
+                    $out .= $this->cast_number_format($value, $field);
                     break;
                 case 'bool':
                     $out .= $value ? $this->lang('bool_on') : $this->lang('bool_off');
@@ -8746,6 +8958,11 @@ class Xcrud
         $host = trim($_SERVER['HTTP_HOST'], '/');
         $scheme = (!isset($_SERVER['HTTPS']) or !$_SERVER['HTTPS'] or strtolower($_SERVER['HTTPS']) == 'off' or strtolower($_SERVER['HTTPS']) ==
             'no') ? 'http://' : 'https://';
+        // some troubles with sym links between private and public
+        $doc_root = trim(str_replace('\\', '/', str_replace(array('/public_html', '/private_html'), '', $_SERVER['DOCUMENT_ROOT'])),
+            '/');
+        $file_dir = trim(str_replace('\\', '/', str_replace(array('/public_html', '/private_html'), '', dirname(__file__))), '/');
+
         $curr_host = $scheme . $host;
         $is_full_url = mb_strpos($url, '://') === false ? false : true;
         if ($is_full_url)
@@ -8772,8 +8989,6 @@ class Xcrud
             }
             elseif ($scr_url && !$url)
             {
-                $doc_root = trim(str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT']), '/');
-                $file_dir = trim(str_replace('\\', '/', dirname(__file__)), '/');
                 //$script_uri = ltrim(mb_substr($file_dir, mb_strpos($file_dir, $doc_root) + mb_strlen($doc_root)), '/');
 
                 $file_dir = explode('/', $file_dir);
@@ -8793,14 +9008,12 @@ class Xcrud
                 }
                 $script_uri = implode('/', $max_root);
 
-                //$script_uri = trim(str_replace(str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT']), '', str_replace('\\', '/', dirname(__file__))),
+                //$script_uri = trim(str_replace(str_replace('\\', '/', $document_root), '', str_replace('\\', '/', $file_dir)),
                 //    '/');
                 $url = $curr_host . '/' . $script_uri;
             }
             else
             {
-                $doc_root = trim(str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT']), '/');
-                $file_dir = trim(str_replace('\\', '/', dirname(__file__)), '/');
                 //$script_uri = ltrim(mb_substr($file_dir, mb_strpos($file_dir, $doc_root) + mb_strlen($doc_root)), '/');
                 $file_dir = explode('/', $file_dir);
                 $max_root = array();
@@ -8820,7 +9033,7 @@ class Xcrud
                 $script_uri = implode('/', $max_root);
 
 
-                //$script_uri = trim(str_replace(str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT']), '', str_replace('\\', '/', dirname(__file__))),
+                //$script_uri = trim(str_replace(str_replace('\\', '/', $document_root), '', str_replace('\\', '/', $file_dir)),
                 //   '/');
                 $request_uri = trim($_SERVER['REQUEST_URI'], '/');
 
@@ -8866,6 +9079,7 @@ class Xcrud
     }
     protected function file_link($field, $primary_val, $thumb = false, $crop = false, $filename = false)
     {
+
         $params = array('xcrud' => array(
                 'instance' => $this->instance_name,
                 'field' => $field,
@@ -8886,6 +9100,47 @@ class Xcrud
             $params['xcrud']['sess_name'] = session_name();
         }
         return Xcrud_config::$scripts_url . '/' . Xcrud_config::$ajax_uri . '?' . http_build_query($params);
+    }
+    protected function real_file_link($filename, $params, $is_details = false)
+    {
+        $url = rtrim($params['url'], '/');
+        if ($is_details && isset($params['detail_thumb']) && isset($params['thumbs'][$params['detail_thumb']]))
+        {
+            $th = $params['thumbs'][$params['detail_thumb']];
+            if (isset($th['folder']))
+            {
+                $url .= '/' . trim($th['folder'], '/');
+            }
+            if (isset($th['marker']))
+            {
+                $url .= '/' . $this->_thumb_name($filename, $th['marker']);
+            }
+            else
+            {
+                $url .= '/' . $filename;
+            }
+        }
+        elseif (!$is_details && isset($params['grid_thumb']) && isset($params['thumbs'][$params['grid_thumb']]))
+        {
+            $th = $params['thumbs'][$params['grid_thumb']];
+            if (isset($th['folder']))
+            {
+                $url .= '/' . trim($th['folder'], '/');
+            }
+            if (isset($th['marker']))
+            {
+                $url .= '/' . $this->_thumb_name($filename, $th['marker']);
+            }
+            else
+            {
+                $url .= '/' . $filename;
+            }
+        }
+        else
+        {
+            $url .= '/' . $filename;
+        }
+        return $url;
     }
     protected function html_safe($text)
     {
@@ -9048,20 +9303,20 @@ class Xcrud
     protected function _get_language() // loads language array from ini file
     {
         if (is_file(XCRUD_PATH . '/' . Xcrud_config::$lang_path . '/' . $this->language . '.ini'))
-            $this->lang_arr = parse_ini_file(XCRUD_PATH . '/' . Xcrud_config::$lang_path . '/' . $this->language . '.ini');
+            self::$lang_arr = parse_ini_file(XCRUD_PATH . '/' . Xcrud_config::$lang_path . '/' . $this->language . '.ini');
         elseif (is_file(XCRUD_PATH . '/' . Xcrud_config::$lang_path . '/en.ini'))
-            $this->lang_arr = parse_ini_file(XCRUD_PATH . '/' . Xcrud_config::$lang_path . '/en.ini');
+            self::$lang_arr = parse_ini_file(XCRUD_PATH . '/' . Xcrud_config::$lang_path . '/en.ini');
         if ($this->set_lang)
         {
-            $this->lang_arr = array_merge($this->lang_arr, $this->set_lang);
+            self::$lang_arr = array_merge(self::$lang_arr, $this->set_lang);
         }
     }
     protected static function _get_language_static()
     {
         if (is_file(XCRUD_PATH . '/' . Xcrud_config::$lang_path . '/' . Xcrud_config::$language . '.ini'))
-            return parse_ini_file(XCRUD_PATH . '/' . Xcrud_config::$lang_path . '/' . Xcrud_config::$language . '.ini');
+            self::$lang_arr = parse_ini_file(XCRUD_PATH . '/' . Xcrud_config::$lang_path . '/' . Xcrud_config::$language . '.ini');
         elseif (is_file(XCRUD_PATH . '/' . Xcrud_config::$lang_path . '/en.ini'))
-            $this->lang_arr = parse_ini_file(XCRUD_PATH . '/' . Xcrud_config::$lang_path . '/en.ini');
+            self::$lang_arr = parse_ini_file(XCRUD_PATH . '/' . Xcrud_config::$lang_path . '/en.ini');
     }
     protected function _get_theme_config()
     { // loads theme configuration from ini file
@@ -9073,7 +9328,7 @@ class Xcrud
     protected function lang($text = '')
     {
         $langtext = mb_convert_case($text, MB_CASE_LOWER, Xcrud_config::$mbencoding);
-        return htmlspecialchars((isset($this->lang_arr[$langtext]) ? $this->lang_arr[$langtext] : $text), ENT_QUOTES,
+        return htmlspecialchars((isset(self::$lang_arr[$langtext]) ? self::$lang_arr[$langtext] : $text), ENT_QUOTES,
             Xcrud_config::$mbencoding);
     }
     protected function theme_config($text = '')
@@ -9087,7 +9342,7 @@ class Xcrud
         return substr_replace($name, $marker, strrpos($name, '.'), 0);
     }
 
-    public function _parse_field_names($fields = '', $location = '', $table = false)
+    public function _parse_field_names($fields = '', $location = '', $table = false, $insert_prefix = true)
     {
         $field_names = array();
         if ($fields)
@@ -9096,6 +9351,16 @@ class Xcrud
             {
                 $table = $this->_get_table($location);
             }
+
+            if ($insert_prefix)
+            {
+                $prefix = $this->prefix;
+            }
+            else
+            {
+                $prefix = '';
+            }
+
             if (is_array($fields))
             {
                 foreach ($fields as $key => $val)
@@ -9107,8 +9372,7 @@ class Xcrud
                         else
                         {
                             $tmp = explode('.', $val, 2);
-                            $field_names[$this->make_field_alias($tmp[0], $tmp[1], $this->prefix)] = array('table' => $this->prefix . $tmp[0],
-                                    'field' => $tmp[1]);
+                            $field_names[$this->make_field_alias($tmp[0], $tmp[1], $prefix)] = array('table' => $prefix . $tmp[0], 'field' => $tmp[1]);
                             unset($tmp);
                         }
                     }
@@ -9122,8 +9386,8 @@ class Xcrud
                         else
                         {
                             $tmp = explode('.', $key, 2);
-                            $field_names[$this->make_field_alias($tmp[0], $tmp[1], $this->prefix)] = array(
-                                'table' => $this->prefix . $tmp[0],
+                            $field_names[$this->make_field_alias($tmp[0], $tmp[1], $prefix)] = array(
+                                'table' => $prefix . $tmp[0],
                                 'field' => $tmp[1],
                                 'value' => $val);
                             unset($tmp);
@@ -9142,8 +9406,7 @@ class Xcrud
                     else
                     {
                         $tmp = explode('.', $val, 2);
-                        $field_names[$this->make_field_alias($tmp[0], $tmp[1], $this->prefix)] = array('table' => $this->prefix . $tmp[0],
-                                'field' => $tmp[1]);
+                        $field_names[$this->make_field_alias($tmp[0], $tmp[1], $prefix)] = array('table' => $prefix . $tmp[0], 'field' => $tmp[1]);
                         unset($tmp);
                     }
                 }
@@ -9159,6 +9422,7 @@ class Xcrud
         if ($table)
         {
             return $pefix . $table . '.' . $field;
+
         }
         else
         {
@@ -9228,12 +9492,12 @@ class Xcrud
         {
             $instance = reset(self::$instance);
             $language = $instance->language;
-            $lang_arr = $instance->lang_arr;
+            $instance->_get_language();
         }
         else
         {
             $language = Xcrud_config::$language;
-            $lang_arr = self::_get_language_static();
+            self::_get_language_static();
         }
 
         if (!self::$css_loaded && !self::$instance)
@@ -9288,7 +9552,7 @@ class Xcrud
             'date_first_day' => Xcrud_config::$date_first_day,
             'date_format' => Xcrud_config::$date_format,
             'time_format' => Xcrud_config::$time_format,
-            'lang' => $lang_arr,
+            'lang' => self::$lang_arr,
             'rtl' => Xcrud_config::$is_rtl ? 1 : 0);
         $out .= '
             <script type="text/javascript">
@@ -10099,7 +10363,7 @@ class Xcrud
                     $fieldlist = $this->search_fieldlist($field, $phrase, $fieldlist);
                 }
             }
-            else
+            elseif ($this->search_default !== false) // not only 'all'
             {
                 foreach ($this->columns_names as $field => $title)
                 {
@@ -10115,10 +10379,18 @@ class Xcrud
 
             $out .= implode('', $fieldlist);
             $attr = array('class' => 'xcrud-data', 'name' => 'column');
-            $out .= $this->open_tag('select', 'xcrud-columns-select ' . $this->theme_config('search_fieldlist'), $attr);
-            //$out .= $this->open_tag('option', '', array('value' => '')) . $this->lang('all_fields') . $this->close_tag('option');
-            $out .= implode('', $optlist);
-            $out .= $this->close_tag('select');
+            if ($this->search_default === false && !$this->search_columns)
+            {
+                $out .= $this->open_tag(array('tag' => 'input', 'type' => 'hidden'), 'xcrud-columns-select ' . $this->theme_config('search_fieldlist'),
+                    $attr);
+            }
+            else
+            {
+                $out .= $this->open_tag('select', 'xcrud-columns-select ' . $this->theme_config('search_fieldlist'), $attr);
+                //$out .= $this->open_tag('option', '', array('value' => '')) . $this->lang('all_fields') . $this->close_tag('option');
+                $out .= implode('', $optlist);
+                $out .= $this->close_tag('select');
+            }
 
             $group = array('tag' => 'span', 'class' => $this->theme_config('grid_button_group'));
             $out .= $this->open_tag($group);
@@ -10389,7 +10661,7 @@ class Xcrud
             }
             if (isset($this->column_width[$field]))
             {
-                $attr['style'] = 'width:' . $this->column_width[$field] . ';min-width:' . $this->column_width[$field] . ';max-width=' .
+                $attr['style'] = 'width:' . $this->column_width[$field] . ';min-width:' . $this->column_width[$field] . ';max-width:' .
                     $this->column_width[$field] . ';';
             }
 
@@ -10667,15 +10939,6 @@ class Xcrud
         }
     }
 
-		// tambahan excel button
-    protected function excel_button($class = '', $icon = '')
-    {
-        if ($this->is_xls && !isset($this->hide_button['excel']))
-        {
-            return $this->render_button('excel', 'excel', '', $class . ' xcrud-in-new-window', $icon);
-        }
-    }
-
     protected function get_image_folder($field)
     {
         if (isset($this->upload_folder[$field]))
@@ -10746,7 +11009,7 @@ class Xcrud
     }
     protected function get_ext($filename)
     {
-        return strtolower(strrchr($name, '.') + 1);
+        return strtolower(strrchr($filename, '.') + 1);
     }
     protected function save_file_to_tmp($file, $filename, $field)
     {
@@ -10772,7 +11035,7 @@ class Xcrud
 
         return $filename;
     }
-    protected function save_file($file, $filename, $field)
+    protected function save_file($file, &$filename, $field)
     {
         $file_path = $this->get_image_folder($field) . '/' . $filename;
         move_uploaded_file($file['tmp_name'], $file_path);
@@ -10785,7 +11048,7 @@ class Xcrud
             {
                 call_user_func_array($callable, array(
                     $field,
-                    $filename,
+                    &$filename,
                     $file_path,
                     $this->upload_config[$field],
                     $this));
@@ -10898,16 +11161,16 @@ class Xcrud
         {
             default:
             case 'today':
-                $range['from'] = mktime(0, 0, 0, date('n', $time), date('j', $time), date('Y', $time));
-                $range['to'] = mktime(23, 59, 59, date('n', $time), date('j', $time), date('Y', $time));
+                $range['from'] = gmmktime(0, 0, 0, date('n', $time), date('j', $time), date('Y', $time));
+                $range['to'] = gmmktime(23, 59, 59, date('n', $time), date('j', $time), date('Y', $time));
                 break;
             case 'next_year':
-                $range['from'] = mktime(0, 0, 0, 1, 1, date('Y', $time) + 1);
-                $range['to'] = mktime(23, 59, 59, 12, 31, date('Y', $time) + 1);
+                $range['from'] = gmmktime(0, 0, 0, 1, 1, date('Y', $time) + 1);
+                $range['to'] = gmmktime(23, 59, 59, 12, 31, date('Y', $time) + 1);
                 break;
             case 'next_month':
-                $range['from'] = mktime(0, 0, 0, date('n', $time) + 1, 1, date('Y', $time));
-                $range['to'] = mktime(23, 59, 59, date('n', $time) + 2, -1, date('Y', $time));
+                $range['from'] = gmmktime(0, 0, 0, date('n', $time) + 1, 1, date('Y', $time));
+                $range['to'] = gmmktime(23, 59, 59, date('n', $time) + 2, -1, date('Y', $time));
                 break;
             case 'this_week_today':
                 if ($week_day >= Xcrud_config::$date_first_day)
@@ -10918,8 +11181,8 @@ class Xcrud
                 {
                     $offset1 = 7 - (Xcrud_config::$date_first_day - $week_day);
                 }
-                $range['from'] = mktime(0, 0, 0, date('n', $time), date('j', $time) - $offset1, date('Y', $time));
-                $range['to'] = mktime(23, 59, 59, date('n', $time), date('j', $time), date('Y', $time));
+                $range['from'] = gmmktime(0, 0, 0, date('n', $time), date('j', $time) - $offset1, date('Y', $time));
+                $range['to'] = gmmktime(23, 59, 59, date('n', $time), date('j', $time), date('Y', $time));
                 break;
             case 'this_week_full':
                 if ($week_day >= Xcrud_config::$date_first_day)
@@ -10931,8 +11194,8 @@ class Xcrud
                     $offset1 = 7 - (Xcrud_config::$date_first_day - $week_day);
                 }
                 $offset2 = 6 - $week_day + Xcrud_config::$date_first_day;
-                $range['from'] = mktime(0, 0, 0, date('n', $time), date('j', $time) - $offset1, date('Y', $time));
-                $range['to'] = mktime(23, 59, 59, date('n', $time), date('j', $time) + $offset2, date('Y', $time));
+                $range['from'] = gmmktime(0, 0, 0, date('n', $time), date('j', $time) - $offset1, date('Y', $time));
+                $range['to'] = gmmktime(23, 59, 59, date('n', $time), date('j', $time) + $offset2, date('Y', $time));
                 break;
             case 'last_week':
                 if ($week_day >= Xcrud_config::$date_first_day)
@@ -10944,8 +11207,8 @@ class Xcrud
                     $offset1 = 7 - (Xcrud_config::$date_first_day - $week_day);
                 }
                 $offset2 = 6 - $week_day + Xcrud_config::$date_first_day;
-                $range['from'] = mktime(0, 0, 0, date('n', $time), date('j', $time) - $offset1 - 7, date('Y', $time));
-                $range['to'] = mktime(23, 59, 59, date('n', $time), date('j', $time) + $offset2 - 7, date('Y', $time));
+                $range['from'] = gmmktime(0, 0, 0, date('n', $time), date('j', $time) - $offset1 - 7, date('Y', $time));
+                $range['to'] = gmmktime(23, 59, 59, date('n', $time), date('j', $time) + $offset2 - 7, date('Y', $time));
                 break;
             case 'last_2weeks':
                 if ($week_day >= Xcrud_config::$date_first_day)
@@ -10957,32 +11220,32 @@ class Xcrud
                     $offset1 = 7 - (Xcrud_config::$date_first_day - $week_day);
                 }
                 $offset2 = 6 - $week_day + Xcrud_config::$date_first_day;
-                $range['from'] = mktime(0, 0, 0, date('n', $time), date('j', $time) - $offset1 - 14, date('Y', $time));
-                $range['to'] = mktime(23, 59, 59, date('n', $time), date('j', $time) + $offset2 - 14, date('Y', $time));
+                $range['from'] = gmmktime(0, 0, 0, date('n', $time), date('j', $time) - $offset1 - 14, date('Y', $time));
+                $range['to'] = gmmktime(23, 59, 59, date('n', $time), date('j', $time) + $offset2 - 14, date('Y', $time));
                 break;
             case 'this_month':
-                $range['from'] = mktime(0, 0, 0, date('n', $time), 1, date('Y', $time));
-                $range['to'] = mktime(23, 59, 59, date('n', $time), date('j', $time), date('Y', $time));
+                $range['from'] = gmmktime(0, 0, 0, date('n', $time), 1, date('Y', $time));
+                $range['to'] = gmmktime(23, 59, 59, date('n', $time), date('j', $time), date('Y', $time));
                 break;
             case 'last_month':
-                $range['from'] = mktime(0, 0, 0, date('n', $time) - 1, 1, date('Y', $time));
-                $range['to'] = mktime(23, 59, 59, date('n', $time), date('j', $time) - 1, date('Y', $time));
+                $range['from'] = gmmktime(0, 0, 0, date('n', $time) - 1, 1, date('Y', $time));
+                $range['to'] = gmmktime(23, 59, 59, date('n', $time), date('j', $time) - 1, date('Y', $time));
                 break;
             case 'last_3months':
-                $range['from'] = mktime(0, 0, 0, date('n', $time) - 3, 1, date('Y', $time));
-                $range['to'] = mktime(23, 59, 59, date('n', $time), date('j', $time) - 1, date('Y', $time));
+                $range['from'] = gmmktime(0, 0, 0, date('n', $time) - 3, 1, date('Y', $time));
+                $range['to'] = gmmktime(23, 59, 59, date('n', $time), date('j', $time) - 1, date('Y', $time));
                 break;
             case 'last_6months':
-                $range['from'] = mktime(0, 0, 0, date('n', $time) - 6, 1, date('Y', $time));
-                $range['to'] = mktime(23, 59, 59, date('n', $time), date('j', $time) - 1, date('Y', $time));
+                $range['from'] = gmmktime(0, 0, 0, date('n', $time) - 6, 1, date('Y', $time));
+                $range['to'] = gmmktime(23, 59, 59, date('n', $time), date('j', $time) - 1, date('Y', $time));
                 break;
             case 'this_year':
-                $range['from'] = mktime(0, 0, 0, 1, 1, date('Y', $time));
-                $range['to'] = mktime(23, 59, 59, date('n', $time), date('j', $time), date('Y', $time));
+                $range['from'] = gmmktime(0, 0, 0, 1, 1, date('Y', $time));
+                $range['to'] = gmmktime(23, 59, 59, date('n', $time), date('j', $time), date('Y', $time));
                 break;
             case 'last_year':
-                $range['from'] = mktime(0, 0, 0, 1, 1, date('Y', $time) - 1);
-                $range['to'] = mktime(23, 59, 59, 12, 31, date('Y', $time) - 1);
+                $range['from'] = gmmktime(0, 0, 0, 1, 1, date('Y', $time) - 1);
+                $range['to'] = gmmktime(23, 59, 59, 12, 31, date('Y', $time) - 1);
                 break;
         }
         return $range;
@@ -10991,22 +11254,22 @@ class Xcrud
     protected function unix2date($time, $utc = false)
     {
         if ($time)
-            return $utc ? gmdate(Xcrud_config::$php_date_format, $time) : date(Xcrud_config::$php_date_format, $time);
+            return $utc ? gmdate($this->date_format['php_d'], $time) : date($this->date_format['php_d'], $time);
         else
             return '';
     }
     protected function unix2datetime($time, $utc = false)
     {
         if ($time)
-            return $utc ? gmdate(Xcrud_config::$php_date_format . ' ' . Xcrud_config::$php_time_format, $time) : date(Xcrud_config::
-                $php_date_format . ' ' . Xcrud_config::$php_time_format, $time);
+            return $utc ? gmdate($this->date_format['php_d'] . ' ' . $this->date_format['php_t'], $time) : date(Xcrud_config::$php_date_format .
+                ' ' . $this->date_format['php_t'], $time);
         else
             return '';
     }
     protected function unix2time($time, $utc = false)
     {
         if ($time)
-            return $utc ? gmdate(Xcrud_config::$php_time_format, $time) : date(Xcrud_config::$php_time_format, $time);
+            return $utc ? gmdate($this->date_format['php_t'], $time) : date($this->date_format['php_t'], $time);
         else
             return '';
     }
@@ -11037,6 +11300,10 @@ class Xcrud
     {
         if ($date)
         {
+            if (strpos($date, ' ') !== false)
+            {
+                list($tmp, $date) = explode(' ', $date, 2);
+            }
             $d = explode(':', $date);
             $date = $this->unix2time(mktime((int)$d[0], (int)$d[1], (int)$d[2]));
             return $date;
@@ -11073,12 +11340,15 @@ class Xcrud
                         '<small> ' . $this->get_table_tooltip() . '</small>';
                     break;
             }
-            if ($to_show)
-                $out .= '<span class="xcrud-toggle-show xcrud-toggle-down"><i class="' . $this->theme_config('slide_down_icon') .
-                    '"></i></span>';
-            else
-                $out .= '<span class="xcrud-toggle-show xcrud-toggle-up"><i class="' . $this->theme_config('slide_up_icon') .
-                    '"></i></span>';
+            if (Xcrud_config::$can_minimize)
+            {
+                if ($to_show)
+                    $out .= '<span class="xcrud-toggle-show xcrud-toggle-down"><i class="' . $this->theme_config('slide_down_icon') .
+                        '"></i></span>';
+                else
+                    $out .= '<span class="xcrud-toggle-show xcrud-toggle-up"><i class="' . $this->theme_config('slide_up_icon') .
+                        '"></i></span>';
+            }
             $out .= $this->close_tag($tag);
         }
         return $out;
@@ -11266,11 +11536,11 @@ class Xcrud
 
     public static function import_session($data)
     {
-        $_SESSION['xcrud_session'] = $data;
+        $_SESSION['lists']['xcrud_session'] = $data;
     }
     public static function export_session()
     {
-        return $_SESSION['xcrud_session'];
+        return $_SESSION['lists']['xcrud_session'];
     }
 
 
@@ -11364,6 +11634,29 @@ class Xcrud
             self::error('File "' . $name . '.php" not exist!');
         }
     }
+    protected function cast_number_format($number, $field, $edit = false)
+    {
+        $out = '';
+        $loc = localeconv();
+        $loc_point = $loc['decimal_point'];
+        $number = preg_replace('/^(.*)[\.\,' . preg_quote($this->field_attr[$field]['point'], '/') . ']+([^\.\,' . preg_quote($this->
+            field_attr[$field]['point'], '/') . ']*)$/ui', '$1' . $loc_point . '$2', $number);
+
+        if ($edit)
+        {
+            $point = ($this->field_attr[$field]['point'] == '.' || $this->field_attr[$field]['point'] == ',') ? $this->field_attr[$field]['point'] :
+                $loc_point;
+            $out .= number_format($number ? $number : 0, $this->field_attr[$field]['decimals'], $point, '');
+        }
+        else
+        {
+            $out .= $this->html_safe($this->field_attr[$field]['prefix']);
+            $out .= number_format($number ? $number : 0, $this->field_attr[$field]['decimals'], $this->field_attr[$field]['point'],
+                $this->html_safe($this->field_attr[$field]['separator']));
+            $out .= $this->html_safe($this->field_attr[$field]['suffix']);
+        }
+        return $out;
+    }
 
 }
 
@@ -11387,6 +11680,15 @@ class Xcrud_postdata
         $this->xcrud->unlock_field($name);
         return $this;
     }
+    public function del($name)
+    {
+        $fdata = $this->xcrud->_parse_field_names($name, 'Xcrud_postdata');
+        foreach ($fdata as $key => $fitem)
+        {
+            unset($this->postdata[$key]);
+        }
+        return $this;
+    }
     public function get($name)
     {
         $fdata = $this->xcrud->_parse_field_names($name, 'Xcrud_postdata');
@@ -11398,4 +11700,5 @@ class Xcrud_postdata
     {
         return $this->postdata;
     }
+
 }

@@ -59,7 +59,7 @@
 								<a href="#">Change Password</a>
 							</li>
 							<li>
-								<a href="#">Logout</a>
+								<a href="userCake/logout.php">Logout</a>
 							</li>
 						  </ul>
 					</li>

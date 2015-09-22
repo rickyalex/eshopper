@@ -26,6 +26,7 @@
 	<link href="css/main.css" rel="stylesheet">
 	<link href="css/responsive.css" rel="stylesheet">
     <link href="css/lightbox.css" rel="stylesheet">
+    <link href="js/raty-2.7.0/lib/jquery.raty.css" rel="stylesheet">
     <!--[if lt IE 9]>
     <script src="js/html5shiv.js"></script>
     <script src="js/respond.min.js"></script>
@@ -89,7 +90,7 @@
 					</div>
 					<div class="col-sm-3">
 						<div class="search_box pull-right">
-							<input type="text" placeholder="Search"/>
+							<input id="searchBox" type="text" placeholder="Search"/>
 						</div>
 					</div>
 				</div>

@@ -5,7 +5,7 @@
 		<div class="footer-top">
 			<div class="container">
 				<div class="row">
-					<div class="col-sm-2">
+					<div class="companyinfoholder">
 						<div class="companyinfo">
 							<img src="images/nicholfashion_logo.png"/>
 							<p>Toko online atau online shop wanita terbaru yang mengikuti tren terkini. Kami menyediakan berbagai produk fashion wanita yang murah, berkualitas dan terpercaya</p>
@@ -67,3 +67,25 @@
     <script src="js/lightbox.js"></script>
     <script src="js/jquery.mockjax.js"></script>
     <script src="js/jquery.validate.js"></script>
+    <script src="js/raty-2.7.0/vendor/jquery.js"></script>
+    <script src="js/raty-2.7.0/lib/jquery.raty.js"></script>
+    <script src="js/jquery.twbsPagination.min.js"></script>
+    <script>
+        $(document).keyup(function(e){
+            e.preventDefault();
+            var code = (e.keyCode ? e.keyCode : e.which);
+            if(code == 13){
+                $.ajax({
+                    type : "post",
+                    url :  "php/submitSearch.php",
+                    data : {"s":jQuery("#searchBox").val()},
+                    dataType: "text",
+                    success:function(data) {
+                        //alert(data);
+                        window.location.replace(data);
+                    }
+                });
+            }
+        });
+    </script>
+    <script>$.fn.raty.defaults.path = 'js/raty-2.7.0/lib/images';</script>

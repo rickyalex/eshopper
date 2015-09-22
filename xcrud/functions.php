@@ -1,19 +1,4 @@
 <?php
-
-function nice_input($value, $field, $primary_key, $list, $xcrud)
-{
-	return $value.' - test';
-}
-
-
-function my_functions($xcrud){
-	$myvalue = $xcrud->get('kode_kustomer'); // data-myvalue attr.
-	// some manipulations
-	$postdata->set('kode_kustomer', $myvalue );
-	// die($myvalue);
-	// $xcrud->set_exception('password','Your password is too simple.');
-} 
-
 function publish_action($xcrud)
 {
     if ($xcrud->get('primary'))
@@ -35,8 +20,12 @@ function unpublish_action($xcrud)
 
 function exception_example($postdata, $primary, $xcrud)
 {
-    $xcrud->set_exception('ban_reason', 'Lol!', 'error');
-    $postdata->set('ban_reason', 'lalala');
+    // get random field from $postdata
+    $postdata_prepared = array_keys($postdata->to_array());
+    shuffle($postdata_prepared);
+    $random_field = array_shift($postdata_prepared);
+    // set error message
+    $xcrud->set_exception($random_field, 'This is a test error', 'error');
 }
 
 function test_column_callback($value, $fieldname, $primary, $row, $xcrud)
@@ -52,12 +41,6 @@ function after_upload_example($field, $file_name, $file_path, $params, $xcrud)
         unlink($file_path);
         $xcrud->set_exception('simple_upload', 'This is not PDF', 'error');
     }
-}
-
-function date_example($postdata, $primary, $xcrud)
-{
-    $created = $postdata->get('datetime')->as_datetime();
-    $postdata->set('datetime', $created);
 }
 
 function movetop($xcrud)
@@ -118,4 +101,70 @@ function movebottom($xcrud)
         }
     }
 }
-			
+
+function show_description($value, $fieldname, $primary_key, $row, $xcrud)
+{
+    $result = '';
+    if ($value == '1')
+    {
+        $result = '<i class="fa fa-check" />' . 'OK';
+    }
+    elseif ($value == '2')
+    {
+        $result = '<i class="fa fa-circle-o" />' . 'Pending';
+    }
+    return $result;
+}
+
+function custom_field($value, $fieldname, $primary_key, $row, $xcrud)
+{
+    return '<input type="text" readonly class="xcrud-input" name="' . $xcrud->fieldname_encode($fieldname) . '" value="' . $value .
+        '" />';
+}
+function unset_val($postdata)
+{
+    $postdata->del('Paid');
+}
+
+function format_phone($new_phone)
+{
+    $new_phone = preg_replace("/[^0-9]/", "", $new_phone);
+
+    if (strlen($new_phone) == 7)
+        return preg_replace("/([0-9]{3})([0-9]{4})/", "$1-$2", $new_phone);
+    elseif (strlen($new_phone) == 10)
+        return preg_replace("/([0-9]{3})([0-9]{3})([0-9]{4})/", "($1) $2-$3", $new_phone);
+    else
+        return $new_phone;
+}
+
+function before_list_example($list, $xcrud)
+{
+    var_dump($list);
+}
+
+function after_update_test($pd, $pm, $xc)
+{
+    $xc->search = 0;
+}
+
+function after_upload_test($field, &$filename, $file_path, $upload_config, $this)
+{
+    $filename = 'bla-bla-bla';
+}
+
+function update_sku($xcrud)
+{
+    $db = Xcrud_db::get_instance();
+    $id = $xcrud->get('primary');
+    die("id".$id);
+    $result = '';
+    
+    for($i = 0; $i < 12; $i++) {
+        $result .= mt_rand(0, 9);
+    }
+    
+    $query = "update items set sku='$result' where id='$id'";
+    $db->query($query);
+    
+}

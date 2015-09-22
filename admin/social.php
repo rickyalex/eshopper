@@ -9,15 +9,20 @@
 			return Xcrud::get_instance($name);
 		}
 	}
-	$table = 'social';
-    $xcrud = Xcrud::get_instance();
-    $xcrud->table($table);
-    $xcrud->table_name('Your Social Media Links');
-    $xcrud->columns('date_created',true);
-    //$xcrud->column_tooltip('img','Recommended size is 720x252');
-    //$xcrud->change_type('img','image');
-    if(countRows($table)>0) $xcrud->unset_add();    
-    $xcrud->pass_var('date_created', Date('Y-m-d h:i:s'),'create');
+    require_once("userCake/models/config.php");
+    if(!securePage($_SERVER['PHP_SELF'])){die();}
+    elseif(isUserLoggedIn()){
+        $table = 'social';
+        $xcrud = Xcrud::get_instance();
+        $xcrud->table($table);
+        $xcrud->table_name('Your Social Media Links');
+        $xcrud->columns('date_created',true);
+        //$xcrud->column_tooltip('img','Recommended size is 720x252');
+        //$xcrud->change_type('img','image');
+        if(countRows($table)>0) $xcrud->unset_add();    
+        $xcrud->pass_var('date_created', Date('Y-m-d h:i:s'),'create');
+    }
+	
 ?>
 <!DOCTYPE html>
 <html>

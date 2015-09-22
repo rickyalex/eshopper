@@ -1,8 +1,8 @@
-<?php /** Configuration file; f0ska xCRUD v.1.6.20; 06/2014 */
+<?php /** Configuration file; f0ska xCRUD v.1.6.26; 03/2015 */
 class Xcrud_config
 {
     // default connection
-    public static $dbname = 'fashion'; // Your database name
+    public static $dbname = 'nicholfa_fashion'; // Your database name
     public static $dbuser = 'root'; // Your database username
     public static $dbpass = 'phpmyadmin777'; // // Your database password
     public static $dbhost = 'localhost'; // Your database host, 'localhost' is default.
@@ -10,7 +10,7 @@ class Xcrud_config
     
     // theme and language
     public static $theme = 'bootstrap'; // can be 'default', 'bootstrap', 'minimal' or your custom. Theme of xCRUD visual presentation. For using bootstrap you need to load it on your page.
-    public static $language = 'id'; // sets default localization
+    public static $language = 'en'; // sets default localization
     public static $is_rtl = false; // enables right-to-left (RTL) mode
     
     
@@ -22,9 +22,9 @@ class Xcrud_config
 
     
     // session
-    public static $sess_name = 'invsesid';//'PHPSESSID'; // If your script is already using the session, specify the session name for it. By default, the name of the session in PHP equal 'PHPSESSID'.
-    public static $sess_expire = 32400;//30; // Specifies the lifetime of the session, as well as the existence of a key safety (for example, the maximum edit-saving timeout).
-    public static $dynamic_session = true; // this option is used for compatibility with with frameworks and cms that using dynamic session name.
+    public static $sess_name = 'PHPSESSID'; // If your script is already using the session, specify the session name for it. By default, the name of the session in PHP equal 'PHPSESSID'.
+    public static $sess_expire = 30; // Specifies the lifetime of the session, as well as the existence of a key safety (for example, the maximum edit-saving timeout).
+    public static $dynamic_session = false; // this option is used for compatibility with with frameworks and cms that using dynamic session name.
     
     
     // alternative session (reqires memcache(d) and mcrypt)
@@ -37,17 +37,17 @@ class Xcrud_config
     
     // scripts
     public static $load_bootstrap = false; // turn on, if you want to load bootstrap via xCRUD
-    public static $load_googlemap = false; // loads google map api for 'POINT' type. Turn off, if your site already uses it.
+    public static $load_googlemap = true; // loads google map api for 'POINT' type. Turn off, if your site already uses it.
     public static $load_jquery = true; // loads jQuery, turn it off if you already have jQuery on your page. jQuery version must be at least 1.7. If your jQuery loads in the bottom of page, you must activate $manual_load and use  Xcrud::load_css() & Xcrud::load_js() on your page.
     public static $load_jquery_ui = true; // jQueryUI, turn it on if you already have jQueryUI on your page (datepicker and slider widgets are mandatory).
     public static $load_jcrop = true; // disable, if your page already uses jCrop
-    public static $jquery_no_conflict = true; // Includes jQuery.noConflict(). Use according to jQuery documentation.
+    public static $jquery_no_conflict = false; // Includes jQuery.noConflict(). Use according to jQuery documentation.
     public static $manual_load = false; // Allows you to disable xcruds css and js output, but you can use Xcrud::load_css() & Xcrud::load_js() in your code manually.
 
     
     // editor
-    public static $editor_url = 'editors/tinymce/tinymce.min.js'; // URL path to editor script, if you want to use the visual editor.
-    //public static $editor_url = 'editors/ckeditor/ckeditor.js';
+    //public static $editor_url = 'editors/tinymce/tinymce.min.js'; // URL path to editor script, if you want to use the visual editor.
+    public static $editor_url = 'editors/ckeditor/ckeditor.js';
     public static $editor_init_url = ''; //  URL path to your custom initialization file for editor.
     public static $force_editor = false; // Forced initialization of editor, even if the path is not specified. Check this if you're already using editor on your page.
     public static $auto_editor_insertion = true; // inserts visual editor on textarea fields.
@@ -56,15 +56,16 @@ class Xcrud_config
     // grid settings
     public static $show_primary_ai_field = false; // Show primary auto-increment field in create/edit view.
     public static $show_primary_ai_column = false; // Show primary auto-increment column in list view.
+    public static $can_minimize = false; // allows 'minimize' arrow in grid
     public static $start_minimized = false; // Start all xCRUD instances minimized.
     public static $remove_confirm = true; // Show confirmation dialog on remove action.
-    public static $column_cut = 250;//50; // Sets the maximum number of characters in the column.
-    public static $limit = 5; // default limit of rows per page
-    public static $limit_list = array('5', '10', '20', '50', '100', 'all'); // default limits list
+    public static $column_cut = 50; // Sets the maximum number of characters in the column.
+    public static $limit = 10; // default limit of rows per page
+    public static $limit_list = array('25', '50', '100', 'all'); // default limits list
     public static $clickable_list_links = true; // make all links, emails clikable in list view
     public static $clickable_filenames = true; // makes filenames clikable in list view
     public static $fixed_action_buttons = true; // it allows to fix the action buttons on the right side of the table. Appears when you hover on row.
-    public static $images_in_grid = true; // shows images in list view
+    public static $images_in_grid = false; // shows images in list view
     public static $images_in_grid_height = 55; // maximal height of thumbnails in list view
     public static $button_labels = false; // displays button labels in grid
     public static $strip_tags = true; // remove all tags from data in grid view. This is not affected to user patterns or other custom.
@@ -73,6 +74,7 @@ class Xcrud_config
     
     // print
     public static $print_all_fields = false; // print all fields and rows of table or only visible.
+    public static $print_full_texts = false; // print grid without cutting
     
     
     // csv export
@@ -87,7 +89,7 @@ class Xcrud_config
     public static $enum_as_radio = false; // shows ENUM field as radiobox, dropdown by default
     public static $set_as_checkboxes = false; // shows SET field as checkboxes, multiselect by default
     public static $upload_folder_def = '../uploads'; // Default uploads folder on your site, relative to xCRUD folder or absolute path required. Folder is must exist.
-    
+    public static $not_null_is_required = false; // makes not null fields required
     
     // features
     public static $enable_printout = true; // show print button
@@ -100,13 +102,13 @@ class Xcrud_config
     public static $enable_sorting = true; // alows to sort by column
     public static $benchmark = false; // Displays information about the performance in the lower right corner.
     public static $nested_readonly_on_view = true; // turn of editing nested tables when viewing parent (can edit only when editing parent)
-    public static $default_tab = true; // Sets name of tab for fields which not assigned with any tab. This tab will be created automatically. Tab will not be created when is FALSE.
+    public static $default_tab = false; // Sets name of tab for fields which not assigned with any tab. This tab will be created automatically. Tab will not be created when is FALSE.
     public static $nested_in_tab = true; // Nested will be displayed in tab if tabs are active
     
        
     // alert settings
     public static $email_from = 'mailer@example.com'; // email from address
-    public static $email_from_name = 'Fleet Management System'; // email from name
+    public static $email_from_name = 'xCRUD Data Management System'; // email from name
     public static $email_enable_html = true; // enables html in email letters
 
     
@@ -116,9 +118,9 @@ class Xcrud_config
     
     // date
     public static $date_first_day = 1; // 0 - Sunday, 1 - Monday etc. Uses in datepicker and search ranges
-    public static $date_format = 'dd/mm/yy'; // jqueryui date format
+    public static $date_format = 'dd.mm.yy'; // jqueryui date format
     public static $time_format = 'HH:mm:ss'; // jqueryui time format
-    public static $php_date_format = 'd/m/Y'; // php date format
+    public static $php_date_format = 'd.m.Y'; // php date format
     public static $php_time_format = 'H:i:s'; // php time format
     
     
@@ -181,9 +183,9 @@ class Xcrud_config
     
     
     // anti XSS
-    public static $auto_xss_filtering = true; // enable all xcrud's POST and GET data filtering
+    public static $auto_xss_filtering = false; // enable all xcrud's POST and GET data filtering
     public static $xss_disalowed_attibutes = array('on\w*', /*'style',*/ 'xmlns', 'formaction'); // Remove bad attributes such as style, onclick and xmlns
-    public static $xss_naughty_html = 'alert|applet|audio|basefont|base|behavior|bgsound|blink|body|embed|expression|form|frameset|frame|head|html|ilayer|iframe|input|isindex|layer|link|meta|object|plaintext|script|textarea|title|video|xml|xss'; // If a tag containing any of the words in the list below is found, the tag gets converted to entities.
+    public static $xss_naughty_html = 'alert|applet|audio|basefont|base|behavior|bgsound|blink|body|embed|expression|form|frameset|frame|head|html|ilayer|input|isindex|layer|link|meta|object|plaintext|script|textarea|title|video|xml|xss'; // If a tag containing any of the words in the list below is found, the tag gets converted to entities.
     public static $xss_naughty_scripts = 'alert|cmd|passthru|eval|exec|expression|system|fopen|fsockopen|file|file_get_contents|readfile|unlink'; // imilar to above, only instead of looking for tags it looks for PHP and JavaScript commands that are disallowed.  Rather than removing the code, it simply converts the parenthesis to entities rendering the code un-executable.
     
 

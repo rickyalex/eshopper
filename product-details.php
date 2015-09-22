@@ -38,9 +38,9 @@
 								<h2><?php echo $array[$x]['name']; ?></h2>
 								<p>SKU: <?php echo $array[$x]['sku']; ?></p>
                                 <p>Category: <?php echo $array[$x]['category']; ?></p>
-								<img src="images/product-details/rating.png" alt="" /><br />
+								<div id="raty"></div><br />
 								<span>
-									<span><?php echo PREFIX_PRICE.$array[$x]['price']; ?></span>
+									<span><?php echo PREFIX_PRICE.number_format($array[$x]['price']); ?></span>
 								</span>
                                 
                                 <div class="social-container">
@@ -56,7 +56,6 @@
 							<ul class="nav nav-tabs">
                                 <li class="active"><a href="#details" data-toggle="tab">Details</a></li>
 								<li ><a href="#others" data-toggle="tab">Other Products</a></li>
-								<li ><a href="#reviews" data-toggle="tab">Reviews (5)</a></li>
 							</ul>
 						</div>
 						<div class="tab-content">
@@ -67,26 +66,6 @@
 								<?php include('php/display_other_items.php'); ?>
 							</div>
 							
-							<div class="tab-pane fade in" id="reviews" >
-								<div class="col-sm-12">
-                                    <?php include('php/display_product_comments.php'); ?>
-									
-									<p><b>Write Your Review</b></p>
-									
-									<form action="#">
-										<span>
-											<input type="text" placeholder="Your Name"/>
-											<input type="email" placeholder="Email Address"/>
-										</span>
-										<textarea name="" ></textarea>
-										<b>Rating: </b> <img src="images/product-details/rating.png" alt="" />
-										<button type="button" class="btn btn-default pull-right">
-											Submit
-										</button>
-									</form>
-								</div>
-							</div>
-							
 						</div>
 					</div><!--/category-tab-->
 					
@@ -94,7 +73,7 @@
 			</div>
             <div class="row">
                 <div class="recommended_items"><!--recommended_items-->
-						<h2 class="title text-center">recommended items</h2>
+						<h2 class="title text-center">Best Seller</h2>
 						
 						<div id="recommended-item-carousel" class="carousel slide" data-ride="carousel">
 							<div class="carousel-inner">
@@ -115,5 +94,20 @@
 <?php
 include ('inc/footer.php'); 
 ?>
+<script>
+    $('#raty').raty({
+      score: <?php echo getItemRating($id); ?>,
+      click: function(score, evt) {
+        alert('ID: ' + this.id + "\nscore: " + score + "\nevent: " + evt);
+        $.ajax({
+            method: "POST",
+            data: {score:score},
+            url: "php/set_item_rating.php"
+        }).done(function(result) {
+            alert("Terima kasih. Anda sudah memberi rating "+result+" pada item ini");
+        });
+      }
+    });    
+</script>
 </body>
 </html>

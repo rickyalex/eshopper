@@ -1,15 +1,17 @@
 <?php
-$rs = $mysqli->query("SELECT * FROM items WHERE id='$id'") or die(mysql_error());
-$row = $rs->fetch_array(MYSQLI_ASSOC);
+/* retrieve Item Description */
+$result = getProductDetails($id);
+$x=0;
 ?>
 
-<div class="col-sm-3">
+<div class="col-sm-12">
     <div class="product-image-wrapper">
 		<div class="single-products">
-	       	<div class="productinfo text-center">
+	       	<div class="productinfo">
                 <h2>Description</h2>
-				<p><?php echo $row['description']; ?></p>
-                <br />
+				<p><?php echo $result[$x]['description']; ?></p>
+				<p>Size : <?php echo $result[$x]['size']; ?></p>
+				<p>Warna : <?php echo $result[$x]['color']; ?></p>
 			</div>
 		</div>
     </div>

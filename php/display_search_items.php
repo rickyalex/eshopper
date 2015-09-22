@@ -10,9 +10,9 @@ else{
 }
     
 /* get searched items */
-$array = getSearchItems($mode,$content);
+$array = getSearchItems($mode,$content,null);
 
-$x=0;
+
 /* if no results found */
 if(count($array)<=0){
 ?>
@@ -30,7 +30,18 @@ if(count($array)<=0){
 <?php        
 }
 else{
-    while($x < count($array)) {
+    /* get page request parameter */
+    $limit = 12;
+    
+    if($page==1) $x=0;
+    elseif($page>1) $x = $limit*($page-1);
+    
+    $y = $limit*$page;
+     
+    if($y<count($array)) $max = $y;
+    else $max = count($array);
+    
+    while($x < $max) {
 	   $bits=explode('.',$array[$x]['img']);
 ?>
 <div>
@@ -39,7 +50,7 @@ else{
     		<div class="single-products">
     	       	<div class="productinfo text-center">
     		      	<a href="product-details.php?id=<?php echo $array[$x]['id']; ?>"><img src="uploads/<?php echo $bits[0].'_th.'.$bits[1]; ?>" alt="" /></a>
-    				<p><?php echo $array[$x]['description']; ?></p>
+    				<p><?php echo $array[$x]['name']; ?></p>
     			</div>
     		</div>
         </div>
@@ -51,11 +62,8 @@ else{
     $x=0;
 ?>
 <div style="clear: both;"></div>
-<ul class="pagination">
-    <li class="active"><a href="">1</a></li>
-	<li><a href="">2</a></li>
-	<li><a href="">3</a></li>
-	<li><a href="">&raquo;</a></li>
+<ul id="pagination" class="pagination-sm">
+    
 </ul>
 <?php
 }
