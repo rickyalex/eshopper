@@ -3,9 +3,8 @@
 	ini_set("display_errors", 1);
 	include('inc/db.php');
     include('inc/commons.php');
-    include('inc/header.php');
+    include('inc/cekongkir_header.php');
 ?>
-
 	 
 	 <div id="contact-page" class="container">
     	<div class="bg">

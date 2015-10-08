@@ -4,9 +4,8 @@
 	include('inc/db.php');
     include('inc/functions.php');
     include('inc/commons.php');
-    include('inc/header.php');
+    include('inc/listresi_header.php');
 ?>
-
 	 
 	 <div id="resi-page" class="container">
     	<div class="bg">

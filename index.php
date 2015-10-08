@@ -4,7 +4,7 @@
 	include('inc/db.php');
     include('inc/functions.php');
     include('inc/commons.php');
-    include('inc/header.php');
+    include('inc/index_header.php');
 ?>
 	<section id="slider"><!--slider-->
 		<div class="container">

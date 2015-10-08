@@ -23,7 +23,7 @@ $rs = $mysqli->query("SELECT * FROM items where active='1' and category='".$arra
     <div class="product-image-wrapper">
 		<div class="single-products">
 	       	<div class="productinfo text-center">
-		      	<a href="product-details.php?id=<?php echo $array[$x]['id']; ?>"><img src="uploads/<?php echo explode('.',$array[$x]['img'])[0].'_th.'.explode('.',$array[$x]['img'])[1]; ?>" alt="" /></a>
+		      	<a href="product-details.php?name=<?php echo urlize($array[$x]['name']); ?>"><img src="uploads/<?php echo explode('.',$array[$x]['img'])[0].'_th.'.explode('.',$array[$x]['img'])[1]; ?>" alt="<?php echo $array[$x]['name']; ?>" /></a>
 				<p><?php echo $array[$x]['description']; ?></p>
 			</div>
 		</div>

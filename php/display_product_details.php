@@ -1,6 +1,6 @@
 <?php
 /* retrieve product details */
-$array = getProductDetails($id);
+$array = getProductDetailsbyName($name);
 $x=0;
 
 $bits = explode('.',$array[$x]['img']);

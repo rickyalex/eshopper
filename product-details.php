@@ -2,11 +2,12 @@
     error_reporting(E_ALL);
 	ini_set("display_errors", 1);
 	include('inc/db.php');
+    
+    $name = $_GET['name'];
+    
     include('inc/commons.php');
     include('inc/functions.php');
-    include('inc/header.php');
-    
-    $id = $_GET['id'];
+    include('inc/productdetails_header.php');
     include('php/product_stats.php');
 ?>
 	<section>
@@ -72,21 +73,20 @@
 				</div>
 			</div>
             <div class="row">
-                <div class="recommended_items"><!--recommended_items-->
-						<h2 class="title text-center">Best Seller</h2>
-						
-						<div id="recommended-item-carousel" class="carousel slide" data-ride="carousel">
-							<div class="carousel-inner">
-								<?php include('php/display_recommended_items_index.php'); ?>
-							</div>
-							 <a class="left recommended-item-control" href="#recommended-item-carousel" data-slide="prev">
-								<i class="fa fa-angle-left"></i>
-							  </a>
-							  <a class="right recommended-item-control" href="#recommended-item-carousel" data-slide="next">
-								<i class="fa fa-angle-right"></i>
-							  </a>			
-						</div>
-					</div><!--/recommended_items-->
+                <div class="best_seller"><!--best_seller-->
+                    <h2 class="title text-center">Best Seller</h2>
+                    <div id="best-seller-carousel" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner">
+                            <?php include('php/display_recommended_items_index.php'); ?>
+                        </div>
+                        <a class="left best-seller-control" href="#best-seller-carousel" data-slide="prev">
+                            <i class="fa fa-angle-left"></i>
+                        </a>
+                        <a class="right best-seller-control" href="#best-seller-carousel" data-slide="next">
+							 <i class="fa fa-angle-right"></i>
+                        </a>			
+                    </div>
+                </div><!--/best_seller-->
             </div>
 		</div>
 	</section>

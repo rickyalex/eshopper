@@ -1,7 +1,7 @@
 <?php
-insertStats($id);
+insertStats($name);
 
 if(rand(0, 10) === 1){
-    updateViews($id);
+    updateViews($name);
 }
 ?>

@@ -4,9 +4,8 @@
 	include('inc/db.php');
     include('inc/functions.php');
     include('inc/commons.php');
-    include('inc/header.php');
+    include('inc/testimoni_header.php');
 ?>
-
 	 
 	 <div id="testimoni-page" class="container">
     	<div class="bg">

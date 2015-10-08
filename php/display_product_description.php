@@ -1,6 +1,6 @@
 <?php
 /* retrieve Item Description */
-$result = getProductDetails($id);
+$result = getProductDetailsbyName($name);
 $x=0;
 ?>
 

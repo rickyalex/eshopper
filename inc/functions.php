@@ -11,10 +11,24 @@ function getDB(){
     return $mysqli;    
 }
 
-function updateViews($id){
+function urlize($name){
+    if(str_word_count($name) > 1){
+        $bits = explode(" ",$name);
+        $count = count($bits);
+        $result = "";
+        for($x=0;$x+1<$count;$x++){
+            $result .= $bits[$x]."_".$bits[$x+1];
+        }
+    }
+    else $result = $name;
+    
+    return $result;
+}
+
+function updateViews($name){
     $mysqli = getDB();
     
-    $rs = $mysqli->query("UPDATE items SET views=(views+10) where id='$id'") or die(mysql_error());
+    $rs = $mysqli->query("UPDATE items SET views=(views+10) where name='$id'") or die(mysql_error());
 }
 
 function insertStats($id){
@@ -179,6 +193,28 @@ function getItemCategory($id){
     return $result;
 }
 
+function getItemCategorybyName($name){
+    if(strpos($name,"_")==true) $realName = str_ireplace("_"," ",$name);
+    else $realName = $name;
+    /* retrieve database instance */
+    $mysqli = getDB();
+    $query = "SELECT category FROM items where name=?";
+    if ($stmt = $mysqli->prepare($query)) {
+        /* bind parameters for markers */
+        $stmt->bind_param('s', $realName);
+        /* execute query */
+        $stmt->execute();
+        /* bind results */
+        $stmt->bind_result($category);
+        /* fetch into variables */
+        $stmt->fetch();
+        $result = $category;
+    }
+    else die('prepare() failed: ' . htmlspecialchars($mysqli->error));
+    
+    return $result;
+}
+
 function getCategoryBar(){
     $result = array();
     /* retrieve database instance */
@@ -242,6 +278,53 @@ function getProductDetails($id){
     if ($stmt = $mysqli->prepare($query)) {
         /* bind parameters for markers */
         $stmt->bind_param('s', $id);
+        /* execute query */
+        $stmt->execute();
+        /* bind results */
+        $stmt->bind_result($id, $name, $sku, $description, $brand, $size, $color, $price, $category, $active, $img, $flag_featured, $date_created);
+        while($stmt->fetch())
+        {
+            $bindResults = array(
+                "id" => $id, 
+                "name" => $name, 
+                "sku" => $sku, 
+                "description" => $description, 
+                "brand" => $brand,
+                "size" => $size,
+                "color" => $color,  
+                "price" => $price, 
+                "category" => $category, 
+                "active" => $active, 
+                "img" => $img, 
+                "flag_featured" => $flag_featured, 
+                "date_created" => $date_created
+            );
+            array_push($result, $bindResults);
+        }
+        /* close statement */
+        $stmt->close();
+        //die(print_r($result));
+    }
+    else die('prepare() failed: ' . htmlspecialchars($mysqli->error));
+    
+    return $result;
+}
+
+function getProductDetailsbyName($name){
+    $result=array();
+    $x=0;
+    
+    if(strpos($name,"_")==true) $realName = str_ireplace("_"," ",$name);
+    else $realName = $name;
+    
+    /* retrieve database instance */
+    $mysqli = getDB();
+    
+    $query = "SELECT id, name, sku, description, brand, size, color, price, category, active, img, flag_featured, date_created FROM items where name=?";
+    //die("query :".$query);
+    if ($stmt = $mysqli->prepare($query)) {
+        /* bind parameters for markers */
+        $stmt->bind_param('s', $realName);
         /* execute query */
         $stmt->execute();
         /* bind results */
@@ -418,6 +501,54 @@ function getOtherItems($id){
     if ($stmt = $mysqli->prepare($query)) {
         /* bind parameters for markers */
         $stmt->bind_param('sss', $active,$category,$id);
+        /* execute query */
+        $stmt->execute();
+        /* bind results */
+        $stmt->bind_result($id, $name, $description, $brand, $price, $category, $active, $img, $flag_featured, $date_created);
+        while($stmt->fetch())
+        {
+            $bindResults = array(
+                "id" => $id, 
+                "name" => $name, 
+                "description" => $description, 
+                "brand" => $brand, 
+                "price" => $price, 
+                "category" => $category, 
+                "active" => $active, 
+                "img" => $img, 
+                "flag_featured" => $flag_featured, 
+                "date_created" => $date_created
+            );
+            array_push($result, $bindResults);
+        }
+        /* close statement */
+        $stmt->close();
+        //die(print_r($result));
+    }
+    else die('prepare() failed: ' . htmlspecialchars($mysqli->error));
+    
+    return $result;
+}
+
+function getOtherItemsbyName($name){
+    $result=array();
+    $x=0;
+    
+    if(strpos($name,"_")==true) $realName = str_ireplace("_"," ",$name);
+    else $realName = $name;
+    
+    /* retrieve database instance */
+    $mysqli = getDB();
+    
+    /* get item category */
+    $category = getItemCategorybyName($name);
+    
+    $active = "1";
+    $query = "SELECT id, name, description, brand, price, category, active, img, flag_featured, date_created FROM items where active=? and category=? and name <> ? order by date_created desc limit 8";
+    //die("query :".$query);
+    if ($stmt = $mysqli->prepare($query)) {
+        /* bind parameters for markers */
+        $stmt->bind_param('sss', $active,$category,$name);
         /* execute query */
         $stmt->execute();
         /* bind results */
