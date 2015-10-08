@@ -8,7 +8,7 @@
 ?>
 
 	 
-	 <div id="contact-page" class="container">
+	 <div id="resi-page" class="container">
     	<div class="bg">
 	    	<div class="row">    		
 	    		<div class="col-sm-12">
@@ -88,18 +88,20 @@
                                     </select>
     							</span>
     							<button type="submit" >Submit</button>
-                            </form>
+                            </form><!--end form-->
+                        </div><!--end col-->
+                    </div><!--end list resi-->
+				</div><!--end col-->			 		
+			</div><!--end row-->
+			<div class="row">    		
+	    		<div class="col-sm-12">
+					<p id="list_resi">
                             
-                        </div>
-                        
-                        <p id="list_resi">
-                            
-                        </p> 
-                    </div>
-				</div>			 		
-			</div>    	  
-    	</div>	
-    </div><!--/#contact-page-->
+                    </p> 
+				</div><!--end col-->
+			</div> <!--end row-->	  	  
+    	</div><!--bg-->	
+    </div><!--/#resi page-->
 	
 	<?php
 include ('inc/footer.php'); 

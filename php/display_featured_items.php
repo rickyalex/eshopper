@@ -1,6 +1,6 @@
 <?php
-/* retrieve featured items */
-$array = getFeaturedItems();
+/* retrieve new items */
+$array = getNewItems();
 $x=0;
 while($x < count($array)) {
    $y=0;

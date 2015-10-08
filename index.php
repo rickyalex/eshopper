@@ -113,20 +113,36 @@
 			<div class="row">
 				
 				<div class="col-sm-12 padding-right">
-					<div class="features_items"><!--features_items-->
+					<div class="new_items"><!--new_items-->
 						<h2 class="title text-center">New Items</h2>
-						<div id="featured-item-carousel" class="carousel slide" data-ride="carousel">
+						<div id="new-item-carousel" class="carousel slide" data-ride="carousel">
 							<div class="carousel-inner">
 								<?php include('php/display_featured_items.php'); ?>
 							</div>
-							 <a class="left featured-item-control" href="#featured-item-carousel" data-slide="prev">
+							 <a class="left new-item-control" href="#new-item-carousel" data-slide="prev">
 								<i class="fa fa-angle-left"></i>
 							  </a>
-							  <a class="right featured-item-control" href="#featured-item-carousel" data-slide="next">
+							  <a class="right new-item-control" href="#new-item-carousel" data-slide="next">
 								<i class="fa fa-angle-right"></i>
 							  </a>			
 						</div>				
-					</div><!--features_items-->
+					</div><!--new_items-->
+                    
+                    <div class="best_seller"><!--best_seller-->
+						<h2 class="title text-center">Best Seller</h2>
+						
+						<div id="best-seller-carousel" class="carousel slide" data-ride="carousel">
+							<div class="carousel-inner">
+								<?php include('php/display_recommended_items_index.php'); ?>
+							</div>
+                            <a class="left best-seller-control" href="#best-seller-carousel" data-slide="prev">
+							 <i class="fa fa-angle-left"></i>
+                            </a>
+							<a class="right best-seller-control" href="#best-seller-carousel" data-slide="next">
+							 <i class="fa fa-angle-right"></i>
+                            </a>			
+						</div>
+					</div><!--/best_seller-->
 					
 					<div class="category-tab"><!--category-tab-->
 						<div class="col-sm-12">
@@ -139,21 +155,7 @@
 						</div>
 					</div><!--/category-tab-->
 					
-					<div class="recommended_items"><!--recommended_items-->
-						<h2 class="title text-center">Best Seller</h2>
-						
-						<div id="recommended-item-carousel" class="carousel slide" data-ride="carousel">
-							<div class="carousel-inner">
-								<?php include('php/display_recommended_items_index.php'); ?>
-							</div>
-							 <a class="left recommended-item-control" href="#recommended-item-carousel" data-slide="prev">
-								<i class="fa fa-angle-left"></i>
-							  </a>
-							  <a class="right recommended-item-control" href="#recommended-item-carousel" data-slide="next">
-								<i class="fa fa-angle-right"></i>
-							  </a>			
-						</div>
-					</div><!--/recommended_items-->
+					
 					
 				</div>
 			</div>

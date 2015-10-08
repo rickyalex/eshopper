@@ -2,8 +2,9 @@
 include('../inc/functions.php');
 /* get posted item id */
 $score = $_POST['score'];
+$id = $_POST['id'];
 
-$score = setItemRating($score);
+$result = setItemRating($score,$id);
 
-die();
+echo $result;
 ?>

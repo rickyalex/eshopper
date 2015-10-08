@@ -17,23 +17,23 @@
 							
                         </div>
 					</div>
-			</div>
-		</div>
-        		
+			     </div>
+		      </div>
+        </div>		
 		<div class="footer-widget">
 			<div class="container">
 				<div class="row">
 					<div class="col-sm-2">
 						<div class="serviceinfo">
 							<h2>Pembayaran Melalui</h2>
-				            <img src="css/images/bank.jpg" width="161">
+				            <img src="images/bank.jpg" width="161">
 							</ul>
 						</div>
 					</div>
 					<div class="col-sm-2">
 						<div class="serviceinfo">
 							<h2>Jasa Pengiriman</h2>
-                                <img src="css/images/pengiriman.jpg" width="161">
+                                <img src="images/pengiriman.jpg" width="161">
 							</ul>
 						</div>
 					</div>
@@ -53,7 +53,7 @@
 			</div>
 		</div>
 		
-				</footer><!--/Footer-->
+</footer><!--/Footer-->
 	
 
     <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
@@ -71,21 +71,28 @@
     <script src="js/raty-2.7.0/lib/jquery.raty.js"></script>
     <script src="js/jquery.twbsPagination.min.js"></script>
     <script>
+        function submitSearch(){
+            $.ajax({
+                type : "post",
+                url :  "php/submitSearch.php",
+                data : {"s":jQuery("#searchBox").val()},
+                dataType: "text",
+                success:function(data) {
+                    //alert(data);
+                    window.location.replace(data);
+                }
+            });
+        }
+        
         $(document).keyup(function(e){
             e.preventDefault();
             var code = (e.keyCode ? e.keyCode : e.which);
             if(code == 13){
-                $.ajax({
-                    type : "post",
-                    url :  "php/submitSearch.php",
-                    data : {"s":jQuery("#searchBox").val()},
-                    dataType: "text",
-                    success:function(data) {
-                        //alert(data);
-                        window.location.replace(data);
-                    }
-                });
+                submitSearch();
             }
         });
     </script>
+    <script>
+        $('.slider-horizontal').css('width', '100%');    
+    </script>        
     <script>$.fn.raty.defaults.path = 'js/raty-2.7.0/lib/images';</script>

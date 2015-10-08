@@ -274,17 +274,20 @@ a#scrollUp i{
 	color:#05a4c1;
 }
 
+.search_box {
+    display: inline-block;
+    border: solid 1px black;
+    padding: 5px;
+}
+
 .search_box input {
-  background: white url(../images/home/searchicon.png) no-repeat;
-  border: solid 1px black ;
-  font-family: 'Open Sans Condensed';
-  font-size: 12px;
-  font-weight: 300;
-  height: 35px;
-  outline: medium none;
-  padding-left: 10px;
-  width: 155px;
-  background-position: 120px;
+    border: none;
+    padding-left: 10px;
+}
+
+.search_box button {
+    border: none;
+    background: none;
 }
 
 
@@ -560,7 +563,7 @@ ul.sub-menu {
 }
 
 .footer-widget {
-  margin-bottom: 68px;
+  padding-bottom: 5%;
 }
 
 .footer-widget .container {
@@ -795,6 +798,24 @@ ul.sub-menu {
   background: yellow;
 }
 
+#table_resi {
+    border: 1px solid black;
+}
+
+#table_resi td{
+    border: 1px solid black;
+    padding: 5px;
+    font-size: 18px;
+}
+
+#table_resi td:nth-child(1){
+    width:10%;
+}
+
+#table_resi tr:nth-child(1){
+    background-color: #05a4c1;
+}
+
 .cek_ongkir{
     padding: 20px;
 }
@@ -993,6 +1014,21 @@ h2.title:before{
   padding: 35px;
 }
 
+.price-range button {
+  color: #05a4c1;
+  background: black;
+  font-weight: bold;
+  border: 0px;
+  position: relative;
+  left: 35%;
+  padding: 10px;
+}
+ 
+.price-range button:hover {
+  color: black;
+  background: yellow;
+}
+
 
 .tooltip-inner {
   background-color: #05a4c1;
@@ -1017,7 +1053,7 @@ h2.title:before{
   padding-right: 0;
 }
 
-.features_items{
+.new_items{
 	overflow:hidden;
 }
 
@@ -1229,47 +1265,47 @@ h2.title {
   margin-right:0;
 }
 
-.recommended_items {
+.best_seller {
   overflow: hidden;
 }
 
-#recommended-item-carousel .carousel-inner .item {
+#best-seller-carousel .carousel-inner .item, #testimoni-image-carousel .carousel-inner .item {
   padding-left: 0;
 }
 
-.recommended-item-control {
+.best-seller-control, .testimoni-image-control {
   position: absolute;
   top: 41%;
 }
 
-.recommended-item-control i {
+.best-seller-control i, .testimoni-image-control i {
   background: none repeat scroll 0 0 #05a4c1;
   color: #FFFFFF;
   font-size: 20px;
   padding: 4px 10px;
 }
 
-.recommended-item-control i:hover {
+.best-seller-control i:hover, .testimoni-image-control i:hover {
   background: #ccccc6;
 }
 
-.featured_items  h2 {
+.new_items  h2 {
 }
 
-.featured_items {
+.new_items {
   overflow: hidden;
 }
 
-#featured-item-carousel .carousel-inner .item {
+#new-item-carousel .carousel-inner .item {
   padding-left: 0;
 }
 
-.featured-item-control {
+.new-item-control {
   position: absolute;
   top: 41%;
 }
 
-.featured-item-control i {
+.new-item-control i {
   background: none repeat scroll 0 0 #05a4c1;
   color: #FFFFFF;
   font-size: 20px;
@@ -1524,6 +1560,14 @@ h2.title {
 }
 
 
+#testimoni-page{
+    margin-top: 5%;
+}
+
+#testimoni-page .panel-title{
+    margin-top: 5%;
+}
+
 .list_testimoni ul {
   background: #FFFFFF;
   border: 0 none;
@@ -1558,14 +1602,14 @@ h2.title {
 	color:#363432;
 }
 
-.list_testimoni  form span {
+.tab-content form span {
   display: block;
 }
 
-.list_testimoni form span input {
-  background:#F0F0E9;
-  border: 0 none;
-  color: #A6A6A1;
+.tab-content form span input {
+  background: white;
+  border: solid 1px black;
+  color: black;
   font-family: 'Open Sans Condensed', sans-serif;
   font-size: 14px;
   outline: medium none;
@@ -1575,14 +1619,14 @@ h2.title {
   
 }
 
-.list_testimoni form span input:nth-child(2), .list_testimoni form span input:nth-child(3) {
+.tab-content form span input:nth-child(2), .tab-content form span input:nth-child(3) {
   margin-left: 3%;
 }
 
-.list_testimoni textarea {
-  background: #F0F0E9;
-  border: medium none;
-  color: #A6A6A1;
+.tab-content textarea {
+  background: white;
+  border: solid 1px black;
+  color: black;
   height: 195px;
   margin-bottom: 25px;
   margin-top: 15px;
@@ -1593,7 +1637,7 @@ h2.title {
   width: 99.5%;
 }
 
-.list_testimoni button {
+.tab-content button {
   background: #05a4c1;
   border: 0 none;
   border-radius: 0;
@@ -1604,12 +1648,11 @@ h2.title {
 
 .list_resi form span select {
   background: white;
-  border: 0 none;
+  border: 1px solid black;
   color: #a1a1a1;
   font-family: 'Open Sans Condensed', sans-serif;
   font-size: 14px;
-  padding: 8px;
-  width: 31%;
+  width: 20%;
   margin-left: 2%;
   margin-bottom: 2%;
   
@@ -1627,8 +1670,13 @@ h2.title {
   color: #FFFFFF;
   font-family: 'Open Sans Condensed', sans-serif;
   font-size: 14px;
-  padding: 2%;
+  padding: 1%;
   margin-left:2%;
+}
+
+.list_resi button:hover {
+  background: yellow;
+  color: black;
 }
 /*************************
 *******404 CSS******

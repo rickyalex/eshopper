@@ -27,9 +27,17 @@
 							<?php include('php/display_category_sidebar.php'); ?>
 						</div><!--/category-productsr-->
 					
-						<div class="brands_products"><!--brands_products-->
-						</div><!--/brands_products-->
+
 						
+                        <div class="price-range"><!--price-range-->
+							<h2>Price Range</h2>
+							<div class="well">
+								 <input type="text" class="span2" value="" data-slider-min="0" data-slider-max="150000" data-slider-step="10000" data-slider-value="[50000,100000]" id="sl2" ><br />
+								 <b>Rp. 0</b> <b class="pull-right">Rp. 150.000</b><br />
+                                 <button type="submit" onclick="alert($('#sl2').val());" >Submit</button>
+							</div>
+                            
+						</div><!--/price-range-->
 						
 					</div>
 				</div>
@@ -38,17 +46,17 @@
 				</div>
 			</div>
             <div class="row">
-                <div class="recommended_items"><!--recommended_items-->
+                <div class="new_items"><!--recommended_items-->
 						<h2 class="title text-center">Best Seller</h2>
 						
-						<div id="recommended-item-carousel" class="carousel slide" data-ride="carousel">
+						<div id="new-item-carousel" class="carousel slide" data-ride="carousel">
 							<div class="carousel-inner">
 								<?php include('php/display_recommended_items_index.php'); ?>
 							</div>
-							 <a class="left recommended-item-control" href="#recommended-item-carousel" data-slide="prev">
+							 <a class="left new-item-control" href="#new-item-carousel" data-slide="prev">
 								<i class="fa fa-angle-left"></i>
 							  </a>
-							  <a class="right recommended-item-control" href="#recommended-item-carousel" data-slide="next">
+							  <a class="right new-item-control" href="#new-item-carousel" data-slide="next">
 								<i class="fa fa-angle-right"></i>
 							  </a>			
 						</div>

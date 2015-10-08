@@ -95,13 +95,13 @@
 include ('inc/footer.php'); 
 ?>
 <script>
+    var id = <?php echo $id; ?>;
     $('#raty').raty({
       score: <?php echo getItemRating($id); ?>,
       click: function(score, evt) {
-        alert('ID: ' + this.id + "\nscore: " + score + "\nevent: " + evt);
         $.ajax({
             method: "POST",
-            data: {score:score},
+            data: {score:score,id:id},
             url: "php/set_item_rating.php"
         }).done(function(result) {
             alert("Terima kasih. Anda sudah memberi rating "+result+" pada item ini");

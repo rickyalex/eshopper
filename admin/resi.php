@@ -18,6 +18,7 @@
         //$xcrud->column_tooltip('img','Recommended size is 720x252');
         $xcrud->columns('date_created',true);
         $xcrud->fields('nomor_resi,tgl_resi,nama,remarks');
+        $xcrud->label('remarks','Kota');
         $xcrud->validation_required('nomor_resi');
         $xcrud->validation_required('nama');
         

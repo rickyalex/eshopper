@@ -45,6 +45,7 @@
         
         $xcrud->pass_var('sku', randomNumber(12),'create');
         $xcrud->pass_var('date_created', Date('Y-m-d h:i:s'),'create');
+        $xcrud->pass_var('last_updated', Date('Y-m-d h:i:s'),'edit');
     }
     
 ?>

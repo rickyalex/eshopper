@@ -8,45 +8,56 @@
 ?>
 
 	 
-	 <div id="contact-page" class="container">
+	 <div id="testimoni-page" class="container">
     	<div class="bg">
 	    	<div class="row">    		
-	    		<div class="col-sm-12">
-                    <div class="list_testimoni">
-                        <h1 class="title text-left"><b>Testimoni</b></h1>
-                        <div class="col-sm-6">
-                            <form id="testimoni" action="#">
-    							<span>
-    								<input type="text" id="nama" name="nama" placeholder="Nama Kamu"/>
-    								<input type="text" id="kota" name="kota" placeholder="Kota Asal"/>
-                                    <input type="email" id="email" name="email" placeholder="Email"/>
-    							</span>
-    							<textarea id="comment" name="comment" ></textarea>
-    							<button type="submit" >Submit</button>
-                            </form>
+	    		<div class="col-sm-3">
+                    <div class="left-sidebar">
+						<div class="panel-group category-products" id="accordian"><!--category-productsr-->
+							<div class="panel panel-default">
+                                <div class="panel-heading">
+                            		<h4 class="panel-title"><a href="#chat" data-toggle="tab">Chat Capture</a></h4>
+                                    <h4 class="panel-title"><a href="#web" data-toggle="tab">Web Testimoni</a></h4>
+                            	</div>
+                            </div>
+						</div><!--/category-productsr-->
+					
+						<div class="brands_products"><!--brands_products-->
+						</div><!--/brands_products-->
+						
+						
+					</div>
+                </div>
+                <div class="col-sm-9">
+                    <div class="tab-content">
+                        <div class="tab-pane fade active in" id="chat" >
+                            <h1 class="title text-left"><b>Chat Capture</b></h1>
+                            <div class="col-sm-12">
+                                <?php include('php/display_testimoni_images.php'); ?>
+                            </div>
                         </div>
-                        <div class="col-sm-6">
-                            <div id="recommended-item-carousel" class="carousel slide" data-ride="carousel">
-							<div class="carousel-inner">
-								<?php include('php/display_testimoni_images.php'); ?>
-							</div>
-							 <a class="left recommended-item-control" href="#recommended-item-carousel" data-slide="prev">
-								<i class="fa fa-angle-left"></i>
-							  </a>
-							  <a class="right recommended-item-control" href="#recommended-item-carousel" data-slide="next">
-								<i class="fa fa-angle-right"></i>
-							  </a>			
-						</div>	
+                        <div class="tab-pane fade in" id="web" >                        
+                            <div class="col-sm-12">
+                                <h1 class="title text-left"><b>Web Testimoni</b></h1>                            
+                                <form id="testimoni" action="#">
+        							<span>
+        								<input type="text" id="nama" name="nama" placeholder="Nama Kamu"/>
+        								<input type="text" id="kota" name="kota" placeholder="Kota Asal"/>
+                                        <input type="email" id="email" name="email" placeholder="Email"/>
+        							</span>
+        							<textarea id="comment" name="comment" ></textarea>
+        							<button type="submit" >Submit</button>
+                                </form>
+                            </div>
+                            <p>
+                                <?php include('php/display_list_testimoni.php')?>
+                            </p> 
                         </div>
-                        <p>
-                            <?php include('php/display_list_testimoni.php')?>
-                            
-                        </p> 
                     </div>
-				</div>			 		
+                </div>			 		
 			</div>    	  
     	</div>	
-    </div><!--/#contact-page-->
+    </div><!--/#testimoni-page-->
 	
 	<?php
 include ('inc/footer.php'); 

@@ -11,6 +11,19 @@ function getDB(){
     return $mysqli;    
 }
 
+function updateViews($id){
+    $mysqli = getDB();
+    
+    $rs = $mysqli->query("UPDATE items SET views=(views+10) where id='$id'") or die(mysql_error());
+}
+
+function insertStats($id){
+    $mysqli = getDB();
+    $sql = "INSERT INTO items_stats(item_id,view_date,browser) values('$id','".date('Y-m-d h:i:s')."','".$_SERVER['HTTP_USER_AGENT']."')";
+    //echo "sql".$sql;
+    $rs = $mysqli->query($sql) or die(mysql_error());
+}
+
 function randomNumber($length) {
     $result = '';
     
@@ -22,7 +35,7 @@ function randomNumber($length) {
 }
 
 function countRows($table) {
-    $mysqli = new mysqli("localhost", "root", "phpmyadmin777", "fashion") or die(mysql_error()); 
+    $mysqli = getDB();
 	
 	if ($mysqli->connect_errno) {
 		printf("Connect failed: %s\n", $mysqli->connect_error);
@@ -113,7 +126,7 @@ function getItemRating($id){
     return $result;
 }
 
-function setItemRating($score){
+function setItemRating($score,$id){
     /* retrieve database instance */
     $mysqli = getDB();
     $query = "SELECT rating FROM items where id=?";
@@ -129,19 +142,21 @@ function setItemRating($score){
         $result = $rating;
     }
     
-    $newRating = ($rating + $score)/2;
+    $newRating = ($result + $score)/2;
+    $mysqli->close();
     
-    $query2 = "UPDATE items set rating=? FROM items where id=?";
+    $mysqli = getDB();
+    $query2 = "UPDATE items set rating=? where id=?";
     if ($stmt2 = $mysqli->prepare($query2)) {
         /* bind parameters for markers */
-        $stm2t->bind_param('ss', $newRating, $id);
+        $stmt2->bind_param('ss', $newRating, $id);
         /* execute query */
         $stmt2->execute();
         $result2 = $score;
     }
     else die('prepare() failed: ' . htmlspecialchars($mysqli->error));
     
-    return $result;
+    return $result2;
 }
 
 function getItemCategory($id){
@@ -259,7 +274,7 @@ function getProductDetails($id){
     return $result;
 }
 
-function getFeaturedItems(){
+function getNewItems(){
     $result=array();
     $x=0;
     $active = "1";
@@ -352,7 +367,7 @@ function getSearchItems($mode,$content,$limit){
         /* define parameter */
         $param = "%$content%";
         $active = "1";
-        $query = "SELECT id, name, description, brand, price, category, active, img, flag_featured, date_created FROM items where active=? having name like ? or brand like ? or category like ? order by date_created desc";
+        $query = "SELECT id, name, description, brand, price, category, active, img, flag_featured, date_created FROM items where active=? having name like ? or brand like ? or category like ? order by id desc";
         //die("query :".$query);
         if ($stmt = $mysqli->prepare($query)) {
             /* bind parameters for markers */
@@ -483,7 +498,7 @@ function getTestimoniImages(){
     $mysqli = getDB();
     
     $active = "1";
-    $query = "SELECT img, active, date_created FROM testimoni_images where active=? order by date_created desc limit 8";
+    $query = "SELECT id, img, active, date_created FROM testimoni_images where active=? order by id desc";
     //die("query :".$query);
     if ($stmt = $mysqli->prepare($query)) {
         /* bind parameters for markers */
@@ -491,10 +506,11 @@ function getTestimoniImages(){
         /* execute query */
         $stmt->execute();
         /* bind results */
-        $stmt->bind_result($img, $active, $date_created);
+        $stmt->bind_result($id, $img, $active, $date_created);
         while($stmt->fetch())
         {
             $bindResults = array(
+                "id" => $id, 
                 "img" => $img, 
                 "active" => $active, 
                 "date_created" => $date_created
@@ -518,7 +534,7 @@ function getListResi($tgl){
     $mysqli = getDB();
     
     $active = "1";
-    $query = "SELECT nomor_resi, tgl_resi, nama FROM resi where tgl_resi=? order by date_created desc";
+    $query = "SELECT nomor_resi, tgl_resi, nama, remarks FROM resi where tgl_resi=? order by date_created desc";
     //die("query :".$query);
     if ($stmt = $mysqli->prepare($query)) {
         /* bind parameters for markers */
@@ -526,13 +542,14 @@ function getListResi($tgl){
         /* execute query */
         $stmt->execute();
         /* bind results */
-        $stmt->bind_result($nomor_resi, $tgl_resi, $nama);
+        $stmt->bind_result($nomor_resi, $tgl_resi, $nama, $remarks);
         while($stmt->fetch())
         {
             $bindResults = array(
                 "nomor_resi" => $nomor_resi, 
                 "tgl_resi" => $tgl_resi, 
-                "nama" => $nama
+                "nama" => $nama,
+                "remarks" => $remarks
             );
             array_push($result, $bindResults);
         }
