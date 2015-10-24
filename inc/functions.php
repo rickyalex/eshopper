@@ -15,10 +15,12 @@ function urlize($name){
     if(str_word_count($name) > 1){
         $bits = explode(" ",$name);
         $count = count($bits);
-        $result = "";
+        $str = "";
         for($x=0;$x+1<$count;$x++){
-            $result .= $bits[$x]."_".$bits[$x+1];
+            $str .= $bits[$x]."-".$bits[$x+1];
         }
+        
+        $result = $str;
     }
     else $result = $name;
     
@@ -28,12 +30,12 @@ function urlize($name){
 function updateViews($name){
     $mysqli = getDB();
     
-    $rs = $mysqli->query("UPDATE items SET views=(views+10) where name='$id'") or die(mysql_error());
+    $rs = $mysqli->query("UPDATE items SET views=(views+10) where name='$name'") or die(mysql_error());
 }
 
-function insertStats($id){
+function insertStats($name){
     $mysqli = getDB();
-    $sql = "INSERT INTO items_stats(item_id,view_date,browser) values('$id','".date('Y-m-d h:i:s')."','".$_SERVER['HTTP_USER_AGENT']."')";
+    $sql = "INSERT INTO items_stats(item_id,view_date,browser) values('$name','".date('Y-m-d h:i:s')."','".$_SERVER['HTTP_USER_AGENT']."')";
     //echo "sql".$sql;
     $rs = $mysqli->query($sql) or die(mysql_error());
 }
@@ -321,7 +323,7 @@ function getProductDetailsbyName($name){
     $mysqli = getDB();
     
     $query = "SELECT id, name, sku, description, brand, size, color, price, category, active, img, flag_featured, date_created FROM items where name=?";
-    //die("query :".$query);
+    //die("query :".$realName);
     if ($stmt = $mysqli->prepare($query)) {
         /* bind parameters for markers */
         $stmt->bind_param('s', $realName);
@@ -401,7 +403,7 @@ function getNewItems(){
 
 }
 
-function getSearchItems($mode,$content,$limit){
+function getSearchItems($mode,$content,$content2,$limit){
     $result=array();
     $x=0;
     
@@ -412,29 +414,110 @@ function getSearchItems($mode,$content,$limit){
 //    if($limit==null) $limit = 12;
     
     if($mode=='category'){
-        $active = "1";
-        //$query = "SELECT id, name, description, brand, price, category, active, img, flag_featured, date_created FROM items where active=? and category=? order by date_created desc limit ?";
-        $query = "SELECT id, name, description, brand, price, category, active, img, flag_featured, date_created FROM items where active=? and category=? order by id desc";
-        if ($stmt = $mysqli->prepare($query)) {
-            /* bind parameters for markers */
-            //$stmt->bind_param('sss', $active, $content, $limit);
-            $stmt->bind_param('ss', $active, $content);
+        if($content=='all'){
+            $active = "1";
+            //$query = "SELECT id, name, description, brand, price, category, active, img, flag_featured, date_created FROM items where active=? and category=? order by date_created desc limit ?";
+            $query = "SELECT id, name, description, brand, price, category, active, img, flag_featured, date_created FROM items where active=? order by id desc";
+            if ($stmt = $mysqli->prepare($query)) {
+                /* bind parameters for markers */
+                //$stmt->bind_param('sss', $active, $content, $limit);
+                $stmt->bind_param('s', $active);
+                /* execute query */
+                $stmt->execute();
+                /* bind results */
+                $stmt->bind_result($id, $name, $description, $brand, $price, $category, $active, $img, $flag_featured, $date_created);
+                while ($stmt->fetch()) {
+                    $bindResults = array(
+                        "id" => $id,
+                        "name" => $name,
+                        "description" => $description,
+                        "brand" => $brand,
+                        "price" => $price,
+                        "category" => $category,
+                        "active" => $active,
+                        "img" => $img,
+                        "flag_featured" => $flag_featured,
+                        "date_created" => $date_created
+                    );
+                    array_push($result, $bindResults);
+                }
+                /* close statement */
+                $stmt->close();
+                /* count total array and loop through it */
+                //die(print_r($result));
+            } else
+                die('prepare() failed: ' . htmlspecialchars($mysqli->error));
+        }
+        else{
+            $active = "1";
+            if ($content2 != '') {
+                $bits = explode("_", $content2);
+                $price_begin = $bits[0];
+                $price_end = $bits[1];
+
+                $query = "SELECT id, name, description, brand, price, category, active, img, flag_featured, date_created FROM items where active=? and category=? and price between ? and ? order by id desc";
+                $stmt = $mysqli->prepare($query);
+                /* bind parameters for markers */
+                $stmt->bind_param('ssss', $active, $content, $price_begin, $price_end);
+            } else {
+                $query = "SELECT id, name, description, brand, price, category, active, img, flag_featured, date_created FROM items where active=? and category=? order by id desc";
+                $stmt = $mysqli->prepare($query);
+                /* bind parameters for markers */
+                $stmt->bind_param('ss', $active, $content);
+            }
+
+            //$query = "SELECT id, name, description, brand, price, category, active, img, flag_featured, date_created FROM items where active=? and category=? order by date_created desc limit ?";
             /* execute query */
             $stmt->execute();
             /* bind results */
             $stmt->bind_result($id, $name, $description, $brand, $price, $category, $active, $img, $flag_featured, $date_created);
-            while($stmt->fetch())
-            {
+            while ($stmt->fetch()) {
                 $bindResults = array(
-                    "id" => $id, 
-                    "name" => $name, 
-                    "description" => $description, 
-                    "brand" => $brand, 
-                    "price" => $price, 
-                    "category" => $category, 
-                    "active" => $active, 
-                    "img" => $img, 
-                    "flag_featured" => $flag_featured, 
+                    "id" => $id,
+                    "name" => $name,
+                    "description" => $description,
+                    "brand" => $brand,
+                    "price" => $price,
+                    "category" => $category,
+                    "active" => $active,
+                    "img" => $img,
+                    "flag_featured" => $flag_featured,
+                    "date_created" => $date_created
+                );
+                array_push($result, $bindResults);
+            }
+            /* close statement */
+            $stmt->close();
+            /* count total array and loop through it */
+        } 
+    }
+    elseif($mode=='price'){
+        $active = "1";
+        $bits = explode("_",$content);
+        $price_begin = $bits[0];
+        $price_end = $bits[1];
+        //die($content);
+        //$query = "SELECT id, name, description, brand, price, category, active, img, flag_featured, date_created FROM items where active=? and category=? order by date_created desc limit ?";
+        $query = "SELECT id, name, description, brand, price, category, active, img, flag_featured, date_created FROM items where active=? and price between ? and ? order by id desc";
+        if ($stmt = $mysqli->prepare($query)) {
+            /* bind parameters for markers */
+            //$stmt->bind_param('sss', $active, $content, $limit);
+            $stmt->bind_param('sss', $active, $price_begin, $price_end);
+            /* execute query */
+            $stmt->execute();
+            /* bind results */
+            $stmt->bind_result($id, $name, $description, $brand, $price, $category, $active, $img, $flag_featured, $date_created);
+            while ($stmt->fetch()) {
+                $bindResults = array(
+                    "id" => $id,
+                    "name" => $name,
+                    "description" => $description,
+                    "brand" => $brand,
+                    "price" => $price,
+                    "category" => $category,
+                    "active" => $active,
+                    "img" => $img,
+                    "flag_featured" => $flag_featured,
                     "date_created" => $date_created
                 );
                 array_push($result, $bindResults);
@@ -443,8 +526,8 @@ function getSearchItems($mode,$content,$limit){
             $stmt->close();
             /* count total array and loop through it */
             //die(print_r($result));
-        }
-        else die('prepare() failed: ' . htmlspecialchars($mysqli->error));
+        } else
+            die('prepare() failed: ' . htmlspecialchars($mysqli->error));
     }
     else{
         /* define parameter */
@@ -587,7 +670,7 @@ function getRecommendedItemsIndex(){
     
     $active = "1";
     $bestseller = "1";
-    $query = "SELECT id, name, description, brand, price, category, active, img, flag_featured, date_created FROM items where active=? and flag_bestseller=? order by id desc limit 20";
+    $query = "SELECT id, name, description, brand, price, category, active, img, flag_featured, date_created FROM items where active=? and flag_bestseller=? order by id desc limit 12";
     //die("query :".$query);
     if ($stmt = $mysqli->prepare($query)) {
         /* bind parameters for markers */
@@ -645,6 +728,41 @@ function getTestimoniImages(){
                 "img" => $img, 
                 "active" => $active, 
                 "date_created" => $date_created
+            );
+            array_push($result, $bindResults);
+        }
+        /* close statement */
+        $stmt->close();
+        //die(print_r($result));
+    }
+    else die('prepare() failed: ' . htmlspecialchars($mysqli->error));
+    
+    return $result;
+}
+
+function getTestimoniList(){
+    $result=array();
+    $x=0;
+    
+    /* retrieve database instance */
+    $mysqli = getDB();
+    
+    $active = 1;
+    $query = "SELECT nama, kota, date_created, comment FROM testimoni where active = ? order by date_created desc";
+    if ($stmt = $mysqli->prepare($query)) {
+        /* bind parameters for markers */
+        $stmt->bind_param('s', $active);
+        /* execute query */
+        $stmt->execute();
+        /* bind results */
+        $stmt->bind_result($nama, $kota, $date_created, $comment);
+        while($stmt->fetch())
+        {
+            $bindResults = array(
+                "nama" => $nama, 
+                "kota" => $kota, 
+                "date_created" => $date_created,
+                "comment" => $comment
             );
             array_push($result, $bindResults);
         }

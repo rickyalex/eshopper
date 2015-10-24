@@ -58,7 +58,7 @@
 				<div class="row">
                     <div class="col-sm-12">
 						<div class="logo">
-							<a href="index.php"><img src="images/nicholfashion_logo2.png" alt="NicholFashion" /></a>
+							<a href="/"><img src="images/nicholfashion_logo2.png" alt="NicholFashion" /></a>
 						</div>
 					</div>
 				</div>
@@ -79,16 +79,16 @@
 						</div>
 						<div class="mainmenu pull-left">
 							<ul class="nav navbar-nav collapse navbar-collapse">
-								<li><a href="index.php">Home</a></li>
-								<li class="dropdown"><a href="#">Pakaian<i class="fa fa-angle-down"></i></a>
+								<li><a href="/">Home</a></li>
+								<li class="dropdown"><a href="pakaian/category">Pakaian<i class="fa fa-angle-down"></i></a>
                                     <ul role="menu" class="sub-menu">
                                         <?php include('php/display_category_dropdown.php'); ?>
                                     </ul>
                                 </li>
-								<li><a href="cara_pemesanan.php" class="active">Cara Pemesanan</a></li>
-                                <li><a href="cek_ongkir.php">Cek Ongkir JNE</a></li>
-                                <li><a href="testimoni.php">Testimoni</a></li>
-                                <li><a href="list_resi.php">No Resi</a></li>
+								<li><a href="cara_pemesanan" class="active">Cara Pemesanan</a></li>
+                                <li><a href="cek_ongkir">Cek Ongkir JNE</a></li>
+                                <li><a href="testimoni">Testimoni</a></li>
+                                <li><a href="list_resi">No Resi</a></li>
 							</ul>
 						</div>
 					</div>

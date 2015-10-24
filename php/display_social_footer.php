@@ -15,33 +15,19 @@ if($row = $rs->fetch_array(MYSQLI_ASSOC))
     $gtalk = $row['gtalk'];
 }
 ?>
-<div class="col-sm-2">
+<div class="col-sm-12">
     <div class="social-footer-content">
         <img src="images/icon-bbm.png"/>
-        <p><?php echo $bbm; ?></p>							
-    </div>
-</div>
-<div class="col-sm-2">
-	<div class="social-footer-content">
-		<img src="images/icon-line.png"/>
-		<p><?php echo $line; ?></p>	
-	</div>
-</div>
-<div class="col-sm-2">
-    <div class="social-footer-content">
+        <p><?php echo $bbm; ?></p>
+        <span class="clearfix"></span>
+        <img src="images/icon-line.png"/>
+        <p><?php echo $line; ?></p>
+        <span class="clearfix"></span>
         <img src="images/icon-whatsapp.png"/>
         <p><?php echo $whatsapp; ?></p>
-    </div>
-</div>
-<div class="col-sm-2">
-    <div class="social-footer-content">
+        <span class="clearfix"></span>
         <img src="images/icon-ym.png"/>
         <p><?php echo $ym; ?></p>
-    </div>
-</div>
-<div class="col-sm-2">
-    <div class="social-footer-content">
-        <img src="images/icon-sms.png"/>
-        <p><?php echo $sms; ?></p>
+        <span class="clearfix"></span>
     </div>
 </div>

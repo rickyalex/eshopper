@@ -1,4 +1,4 @@
 <?php
-$url = "shop.php?s=".$_POST['s'];
+$url = "pakaian/s/".$_POST['s'];
 echo $url; 
 ?>

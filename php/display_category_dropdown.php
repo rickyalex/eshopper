@@ -11,7 +11,7 @@ $rs = $mysqli->query("SELECT distinct category FROM items where active='1'") or 
 	$x=0;
 	while($x < count($array)) {
 ?>
-    <li><a href="pakaian.php?cat=<?php echo strtolower($array[$x]['category']); ?>"><?php echo $array[$x]['category']; ?></a></li>
+    <li><a href="pakaian/category/<?php echo strtolower($array[$x]['category']); ?>"><?php echo $array[$x]['category']; ?></a></li>
 <?php
         $x++;
     }

@@ -19,7 +19,7 @@ $rs = $mysqli->query("SELECT * FROM items where active='1' and category='".$arra
 	while($x < count($array)) {
 ?>
 
-<div class="col-sm-3">
+<div class="col-xs-6 col-sm-6 col-md-3">
     <div class="product-image-wrapper">
 		<div class="single-products">
 	       	<div class="productinfo text-center">

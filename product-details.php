@@ -3,12 +3,16 @@
 	ini_set("display_errors", 1);
 	include('inc/db.php');
     
-    $name = $_GET['name'];
+    $url = urldecode($_SERVER['REQUEST_URI']);
+    $bits = explode("/",$url);
+    //$name = $bits[2]; //production
+    $name = $bits[3]; //local
+    
     
     include('inc/commons.php');
     include('inc/functions.php');
     include('inc/productdetails_header.php');
-    include('php/product_stats.php');
+    //include('php/product_stats.php');
 ?>
 	<section>
 		<div class="container detail">
@@ -47,7 +51,10 @@
                                 <div class="social-container">
                                     <?php include('php/display_social_contact.php'); ?>
                                 </div>
-								<a href=""><img src="images/product-details/share.png" class="share img-responsive"  alt="" /></a>
+                                                                <div class="share_bar">
+                                                                    <a href=""><img src="images/product-details/share.png" class="share img-responsive"  alt="" /></a>
+                                                                </div>
+                                                                
 							</div><!--/product-information-->
 						</div>
 					</div><!--/product-details-->
@@ -60,7 +67,7 @@
 							</ul>
 						</div>
 						<div class="tab-content">
-                            <div class="tab-pane fade active in" id="details" >
+                                <div class="tab-pane fade active in" id="details" >
 								<?php include('php/display_product_description.php'); ?>
 							</div>
 							<div class="tab-pane fade in" id="others" >
@@ -74,18 +81,10 @@
 			</div>
             <div class="row">
                 <div class="best_seller"><!--best_seller-->
-                    <h2 class="title text-center">Best Seller</h2>
-                    <div id="best-seller-carousel" class="carousel slide" data-ride="carousel">
-                        <div class="carousel-inner">
+                    <h2 class="title text-center"><img src="images/best_seller.png" alt="" width="180px"></h2>
+                    
                             <?php include('php/display_recommended_items_index.php'); ?>
-                        </div>
-                        <a class="left best-seller-control" href="#best-seller-carousel" data-slide="prev">
-                            <i class="fa fa-angle-left"></i>
-                        </a>
-                        <a class="right best-seller-control" href="#best-seller-carousel" data-slide="next">
-							 <i class="fa fa-angle-right"></i>
-                        </a>			
-                    </div>
+                        
                 </div><!--/best_seller-->
             </div>
 		</div>

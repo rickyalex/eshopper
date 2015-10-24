@@ -18,13 +18,14 @@
     <meta property="og:type" content="website"/>
     <title>NicholFashion : Toko Fashion Wanita Terlengkap di Indonesia</title>
     <link rel="shortcut icon" href="images/logo.ico">
-   	
+   
+    <link href="css/main.css" rel="stylesheet">
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/font-awesome.min.css" rel="stylesheet">
     <link href="css/prettyPhoto.css" rel="stylesheet">
     <link href="css/price-range.css" rel="stylesheet">
     <link href="css/animate.css" rel="stylesheet">
-    <link href="css/main.css" rel="stylesheet">
+    
 	<link href="css/responsive.css" rel="stylesheet">
     <link href="css/lightbox.css" rel="stylesheet">
     <link href="js/raty-2.7.0/lib/jquery.raty.css" rel="stylesheet">
@@ -55,10 +56,9 @@
       var js, fjs = d.getElementsByTagName(s)[0];
       if (d.getElementById(id)) return;
       js = d.createElement(s); js.id = id;
-      js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.4";
+      js.src = "//connect.facebook.net/id_ID/sdk.js#xfbml=1&version=v2.5";
       fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
-    </script>
+    }(document, 'script', 'facebook-jssdk'));</script>
 	<header id="header"><!--header-->
 		<div class="header-middle"><!--header-middle-->
 			<div class="container">

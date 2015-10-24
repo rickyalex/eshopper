@@ -1,0 +1,11 @@
+
+    RewriteEngine on
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^pakaian/([0-9a-zA-Z]+) pakaian.php?cat=$1 [NC]
+    RewriteRule ^([0-9a-zA-Z]+) product-details.php?name=$1 [NC]
+    
+     
+    RewriteCond %{HTTP_HOST} ^nicholfashion\.com$ [NC]
+    RewriteRule ^(.*)$ http://www.nicholfashion.com/$1 [R=301,L] 
+

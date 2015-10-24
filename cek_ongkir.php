@@ -6,7 +6,7 @@
     include('inc/cekongkir_header.php');
 ?>
 	 
-	 <div id="contact-page" class="container">
+	<div id="contact-page" class="container">
     	<div class="bg">
 	    	<div class="row">
                 <div class="col-sm-12">
@@ -29,5 +29,12 @@
 	<?php
 include ('inc/footer.php'); 
 ?>
+    <script>
+      $(document).ready(function() {
+        if ($(window).width() <= 480) {
+            $('.cek_ongkir iframe').css({ 'height':'172px'});
+        }
+      });
+    </script>
 </body>
 </html>

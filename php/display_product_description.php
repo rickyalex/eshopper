@@ -5,7 +5,7 @@ $x=0;
 ?>
 
 <div class="col-sm-12">
-    <div class="product-image-wrapper">
+    <div class="product-description">
 		<div class="single-products">
 	       	<div class="productinfo">
                 <h2>Description</h2>

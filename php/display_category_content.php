@@ -9,7 +9,7 @@ while($x < count($array)) {
     <div class="tab-pane fade <?php if($x==0){ ?>active<?php } ?> in" id="<?php echo strtolower($array[$x]['category']); ?>" >
     <?php
         /* category content default limit is 4 */
-        $items = getSearchItems("category",$array[$x]['category'],null);        
+        $items = getSearchItems("category",$array[$x]['category'],null,null);        
         //$rs = $mysqli->query("SELECT * FROM items where category='".$array[$x]['category']."' and active='1' order by date_created desc limit 4") or die(mysql_error());
         //echo "SELECT * FROM items where category='".$array[$x]['category']."' and active='1' order by date_created desc limit 4";
         $i=0;
@@ -28,7 +28,7 @@ while($x < count($array)) {
         <div class="product-image-wrapper">
 			<div class="single-products">
 				<div class="productinfo text-center">
-					<a href="product-details.php?id=<?php echo $items[$i]['id']; ?>"><img src="uploads/<?php echo $bits[0].'_th.'.$bits[1]; ?>" alt="<?php echo $items[$i]['name']; ?>" /></a>
+					<a href="produk/<?php echo urlencode($items[$i]['name']); ?>"><img src="uploads/<?php echo $bits[0].'_th.'.$bits[1]; ?>" alt="<?php echo $items[$i]['name']; ?>" /></a>
 					<h2><?php echo PREFIX_PRICE.number_format($items[$i]['price']); ?></h2>
                     <p><?php echo $items[$i]['name']; ?></p>
 				</div>						

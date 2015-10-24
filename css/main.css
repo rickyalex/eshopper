@@ -319,6 +319,9 @@ ul.sub-menu {
 	width: 220px;
 	display: none;
 	z-index: 999;
+	-webkit-box-shadow: 1px 7px 13px 2px rgba(148,145,148,0.35);
+	-moz-box-shadow: 1px 7px 13px 2px rgba(148,145,148,0.35);
+	box-shadow: 1px 7px 13px 2px rgba(148,145,148,0.35);
 }
 
 .dropdown ul.sub-menu li .active{
@@ -388,7 +391,7 @@ ul.sub-menu {
 }
 
 .companyinfo {
-  margin-top: 57px;
+  margin-top: 30px;
 }
 
 .companyinfo img{
@@ -427,17 +430,20 @@ ul.sub-menu {
   display: block;
   margin-left:auto;
   margin-right:auto;
+  float: left;
 }
 
 .social-footer-content p{
-  padding-top: 10px;
   text-align:center;
-  font-size:18px;
+  font-size:16px;
+  float: left;
+  margin-left: 13%;
 }
 
 .social-footer {
   height:100%;
-  padding-top:8%;
+  padding-top:18%;
+  padding-left:12%;
 }
 
 .serviceinfo h2 {
@@ -472,6 +478,19 @@ ul.sub-menu {
 .social-container p{
   display:inline;
   padding-left:20px;
+}
+
+span.social_button{
+    margin-top: 3%;
+    position: relative;
+}
+
+span.social_button img{
+    margin-left: 30%;
+    margin-right: 30%;
+    margin-bottom: 10px;
+    width: 50px;
+    height: 100%;
 }
 
 .footer-top .col-sm-3{
@@ -1123,7 +1142,6 @@ h2.title {
   transition: height 500ms ease 0s;
   width: 100%;
   display: block;
-  opacity:;
 }
 
 .single-products:hover .product-overlay {
@@ -1602,6 +1620,23 @@ h2.title {
 	color:#363432;
 }
 
+#list_more, #image_more{
+    background: #05a4c1;
+    color: white;
+    font-size: 16px;
+    text-align: center;
+    padding: 5px;
+    margin-bottom: 5%;
+    margin-left:2%;
+    margin-right:2%;
+}
+
+#list_more:hover, #image_more:hover{
+    background: yellow;
+    color: black;
+    cursor: pointer;
+}
+
 .tab-content form span {
   display: block;
 }
@@ -1797,20 +1832,6 @@ h2.title {
   margin-bottom: 0;
   outline: medium none;
   padding-left: 0;
-}
-
-
-.or{
-	background: #05a4c1;
-	border-radius: 40px;
-	color: #FFFFFF;
-	font-family: 'Open Sans Condensed', sans-serif;
-	font-size: 16px;
-	height: 50px;
-	line-height: 50px;
-	margin-top: 75px;
-	text-align: center;
-	width: 50px;
 }
 
 
@@ -2816,4 +2837,146 @@ h2.title {
   color: #05a4c1;
 }
 
+.share img-responsive{
+    display:none;
+}
 
+.product-description{
+	//border:1px solid #F7F7F5;
+	overflow: hidden;
+	margin-bottom:30px;
+        padding: 10px;
+}
+
+/** 320 X 480 **/
+
+@media screen and (min-width: 320px) and (max-width: 480px) {
+    .search_box{
+       margin-top: -18px;
+    }
+    
+    #slider { 
+      width: 100%;
+      height: 180px;
+  }
+  
+  .slider_content img{
+      width: 100%;
+      height: 180px;
+  }
+  
+  .category_links{
+      display:none;
+  }
+  
+  .new_items{
+      margin-top: 30px;
+  }
+  
+  .best_seller{
+      margin-top: 10px;
+  }
+  
+  .new_items .product-image-wrapper{
+      width: 120px;
+      height: 100%;
+  }
+  
+  .new_items h2 img{
+      width: 120px;
+      height: 100%;
+  }
+  
+  .best_seller h2 img{
+      width: 120px;
+      height: 100%;
+  }
+  
+  .best_seller .product-image-wrapper h2{
+      font-size: 14px;
+  }
+  
+  .best_seller .product-image-wrapper p{
+      font-size: 14px;
+  }
+  
+  .companyinfoholder{
+      margin-left:10%;
+      margin-right:10%;
+      width: 220px;
+  }
+  
+  .companyinfoholder img{
+      width: 220px;
+      height:100%;
+  }
+  
+  .companyinfoholder p{
+      font-size: 18px;
+  }
+  
+  .social-footer{
+      padding-top: 10px;
+      padding-left: 0px;
+      padding-right: 0px;
+      margin-left:22%;
+      margin-right:22%;
+  }
+  
+  .serviceinfo h2{
+      font-size:12px;
+  }
+  
+  .serviceinfo img{
+      width: 60px;
+      height: 100%;
+  }
+  
+  .left-sidebar{
+      display:none;
+  }
+  
+  .detail{
+      margin:0;
+  }
+  
+  .product-information span span{
+      margin:0;
+  }
+  
+  .social-container{
+      width:100%;
+  }
+  
+  .social_logo{
+      width:30%;
+      margin:0;
+      float:left;
+      position:relative;
+  }
+  
+  .social-container p{
+      float:left;
+  }
+  
+  .share_bar{
+      display:none;
+  }
+  
+  .product-information {
+    padding-bottom: 30px 0 30px 30px;
+  }
+  
+  .cek_ongkir iframe{
+      margin-bottom: 50px;
+  }
+  
+  span.social_button img{
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 20px;
+    position: relative;
+    width: 40px;
+    height: 100%;
+  }
+}

@@ -1,17 +1,28 @@
 <?php
-    $rs2 = $mysqli->query("SELECT * FROM testimoni order by date_created desc") or die(mysql_error());
-    $y=0;
-    $array=array();
-    while($row = $rs2->fetch_array(MYSQLI_ASSOC))
+    $array=getTestimoniList();
+    $x=0;
+    $limit = 8;
+    
+    if(count($array)>$limit) $max = $limit;
+    else $max = count($array);
+    
+    while($x < $max)
     {    
 ?>
     <div class="col-sm-12">
         <div class="single-testimoni">
-            <span><?php echo $row['nama']." - ".$row['kota']; ?></span>
-            <p class="date"><?php echo $row['date_created']; ?></p>
-            <p><?php echo $row['comment']; ?></p>
+            <span><?php echo $array[$x]['nama']." - ".$array[$x]['kota']; ?></span>
+            <p class="date"><?php echo $array[$x]['date_created']; ?></p>
+            <p><?php echo $array[$x]['comment']; ?></p>
         </div>
     </div>    
 <?php
+        $x++;
     }    
 ?>
+
+<div class="col-sm-12">
+    <div id="list_more" onclick="loadMore('list')">
+        <span>Show More</span>
+    </div>
+</div>

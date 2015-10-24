@@ -1,0 +1,36 @@
+
+    RewriteEngine on
+    #RewriteBase /nicholfashion/
+    
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^pakaian/category/?$ pakaian.php?cat=all [L]
+    RewriteRule ^pakaian/category/([0-9a-zA-Z]+)/?$ pakaian.php?cat=$1 [L]
+    RewriteRule ^pakaian/category/([0-9a-zA-Z]+)/([0-9]+)/?$ pakaian.php?cat=$1&p=$2 [L]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^pakaian/search/([0-9a-zA-Z]+)/?$ pakaian.php?s=$1 [L]
+    RewriteRule ^pakaian/search/([0-9a-zA-Z]+)/([0-9]+)/?$ pakaian.php?s=$1&p=$2 [L]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^pakaian/price/([0-9a-zA-Z]+) pakaian.php?pr=$1 [L]
+    RewriteRule ^pakaian/price/([0-9a-zA-Z]+)/([0-9]+)/?$ pakaian.php?pr=$1&p=$2 [L]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^pakaian/category/([0-9a-zA-Z]+)/price/([^/.]+)?$ pakaian.php?cat=$1&pr=$2 [L]
+    RewriteRule ^pakaian/category/([0-9a-zA-Z]+)/price/([^/.]+)/([0-9]+)/?$ pakaian.php?cat=$1&pr=$2&p=$3 [L]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^produk/([0-9a-zA-Z]+) product-details.php?name=$1 [L]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*?)/?$ $1.php [L]
+     
+    RewriteCond %{HTTP_HOST} ^nicholfashion\.com$ [NC]
+    RewriteRule ^(.*)$ http://www.nicholfashion.com/$1 [R=301,L] 
+

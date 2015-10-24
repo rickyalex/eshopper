@@ -16,10 +16,17 @@ if($row = $rs->fetch_array(MYSQLI_ASSOC))
     $gtalk = $row['gtalk'];
 }
 ?>
-<?php if($bbm!='') { ?><img src="images/icon-bbm.png" alt="" /><p><?php echo $bbm; ?></p><br /><?php } ?>
-<?php if($whatsapp!='') { ?><img src="images/icon-whatsapp.png" alt="" /><p><?php echo $whatsapp; ?></p><br /><?php } ?>
-<?php if($line!='') {  ?><img src="images/icon-line.png" alt="" /><p><?php echo $line; ?></p><br /><?php } ?>
-<?php if($ym!='') {  ?><img src="images/icon-ym.png" alt="" /><p><?php echo $ym; ?></p><br /><?php } ?>
-<?php if($sms!='') {  ?><img src="images/icon-sms.png" alt="" /><p><?php echo $sms; ?></p><br /><?php } ?>
-<?php if($viber!='') {  ?><img src="images/icon-viber.png" alt="" /><p><?php echo $viber; ?></p><br /><?php } ?>
-<?php if($kakao!='') {  ?><img src="images/icon-kakao.png" alt="" /><p><?php echo $kakao; ?></p><br /><?php } ?>
+    <?php if($bbm!='') { ?><div class="social_logo"><img src="images/icon-bbm.png" alt="" /></div><p><?php echo $bbm; ?></p><br /><?php } ?>
+    <div class="clearfix"></div>
+<?php if($whatsapp!='') { ?><div class="social_logo"><img src="images/icon-whatsapp.png" alt="" /></div><p><?php echo $whatsapp; ?></p><br /><?php } ?>
+<div class="clearfix"></div>
+<?php if($line!='') {  ?><div class="social_logo"><img src="images/icon-line.png" alt="" /></div><p><?php echo $line; ?></p><br /><?php } ?>
+<div class="clearfix"></div>
+<?php if($ym!='') {  ?><div class="social_logo"><img src="images/icon-ym.png" alt="" /></div><p><?php echo $ym; ?></p><br /><?php } ?>
+<div class="clearfix"></div>
+<?php if($sms!='') {  ?><div class="social_logo"><img src="images/icon-sms.png" alt="" /></div><p><?php echo $sms; ?></p><br /><?php } ?>
+<div class="clearfix"></div>
+<?php if($viber!='') {  ?><div class="social_logo"><img src="images/icon-viber.png" alt="" /></div><p><?php echo $viber; ?></p><br /><?php } ?>
+<div class="clearfix"></div>
+<?php if($kakao!='') {  ?><div class="social_logo"><img src="images/icon-kakao.png" alt="" /></div><p><?php echo $kakao; ?></p><br /><?php } ?>
+<div class="clearfix"></div>
